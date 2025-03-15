@@ -1,24 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { UserProvider } from "./UserContext";
+import Main from "./Main";
+import Login from "./Login";
+import Genre from "./Genre";
+import LoginMain from "./LoginMain"; // LoginMain 컴포넌트 추가
+import CreatePost from "./CreatePost";
+import Register from "./Register";
+import Profile from "./Profile";
+import OTTMR from "./OTTMR";
+import MR from "./MR";
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <UserProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Main />} />
+          <Route path="/main" element={<Main />} />
+          <Route path="/login" element={<Login />} /> {/* 소문자로 변경 */}
+          <Route path="/register" element={<Register />} />
+          {/* 소문자로 변경 */}
+          <Route path="/genre" element={<Genre />} /> {/* 소문자로 변경 */}
+          <Route path="/loginmain" element={<LoginMain />} />{" "}
+          <Route path="/createPost" element={<CreatePost />} />{" "}
+          <Route path="/register" element={<Register />} />{" "}
+          <Route path="/profile" element={<Profile />} />{" "}
+          <Route path="/ottmr" element={<OTTMR />} />
+          {/* LoginMain 라우트 추가 */}
+          <Route path="/mr" element={<MR />} />
+        </Routes>
+      </Router>
+    </UserProvider>
   );
 }
 

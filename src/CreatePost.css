@@ -1,0 +1,176 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+header {
+  background-color: #3498db;
+  color: #fff;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.menu-button {
+  background-color: #2980b9;
+  color: #fff;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.3s ease-in-out;
+}
+
+.menu-button:hover {
+  background-color: #1f618d;
+  transform: scale(1.05);
+}
+
+.overlay {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 999;
+}
+
+.container {
+  max-width: 800px;
+  margin: 40px auto;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+  text-align: center;
+  color: #ffffff;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: #495057;
+}
+
+input, textarea, select {
+  font-size: 16px;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  width: 100%;
+}
+
+textarea {
+  resize: vertical;
+  height: 150px;
+}
+
+button {
+  background-color: #3498db;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+.review-container {
+  max-width: 1000px;
+  background: white;
+  padding: 20px;
+  margin: 30px auto;
+  border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.review-container h2 {
+  text-align: center;
+  color: #333;
+}
+
+.review-form-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.review-post-name, .review-movie-post, .review-image-upload, .review-rating, .review {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+/* 입력 필드 스타일 */
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+textarea {
+  resize: none;
+}
+
+/* 이미지 업로드 */
+.review-image-upload label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ecf0f1;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.review-image-upload input {
+  display: none;
+}
+
+/* 별점 스타일 */
+.star-rating {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+}
+
+.review-rating-label {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+/* 제출 버튼 */
+.review-story button {
+  width: 100%;
+  padding: 10px;
+  background-color: #2980b9;
+  color: white;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.review-story button:hover {
+  background-color: #1a5276;
+}

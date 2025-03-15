@@ -1,0 +1,144 @@
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px; /* margin: 0; 때문에 무시됨 */
+  margin: 0;
+  font-family: Arial, sans-serif;
+  padding: 0;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.App header {
+  background-color: #5d9cec;
+  color: #fff;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.menu-button {
+  background-color: #467fcf;
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease-in-out;
+  font-size: 14px;
+  width: 55px;
+  height: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu-button:hover {
+  background-color: #1f618d;
+  transform: scale(1.05);
+}
+
+.side-menu {
+  display: block;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 270px;
+  height: 100%;
+  background-color: #ffffff;
+  color: #333;
+  padding: 20px;
+  box-shadow: -3px 0 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  transition: transform 0.3s ease-in-out;
+}
+
+.side-menu ul {
+  list-style: none;
+  padding: 0;
+}
+
+.side-menu li {
+  margin: 20px 0;
+}
+
+.side-menu a {
+  color: #3498db;
+  text-decoration: none;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.side-menu a:hover {
+  text-decoration: underline;
+}
+
+.overlay {
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+}
+
+.container {
+  display: flex;
+  padding: 20px;
+  max-width: 0px;
+  margin: 20px; /* 상단 마진 추가 및 중앙 정렬 */
+  box-sizing: border-box; /* padding이 포함된 전체 크기 유지 */
+  width: 90%; /* 화면 크기가 작아도 컨테이너가 너무 작아지지 않게 조정 */
+  position: relative;
+  top: -20px;
+  justify-content: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0; /* 폼 요소의 상단 마진 제거 */
+}
+
+label {
+  margin-top: 0px; /* 라벨과 입력 칸 사이의 간격 조정 */
+}
+
+input {
+  padding: 10px;
+  margin-bottom: 15px; /* 입력 칸 사이의 간격 조정 */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  width: 500px;
+}
+
+button {
+  padding: 10px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 500px;
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+.error {
+  color: red;
+  margin-top: 10px;
+}
+
+.success {
+  color: green;
+  margin-top: 10px;
+}
