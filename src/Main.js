@@ -54,7 +54,7 @@ function Main() {
       <nav>
         <a href="/main">홈</a>
         <div className="dropdown">
-          <a href="*">리뷰게시판</a>
+          <a href="MR">리뷰게시판</a>
           <div className="dropdown-content">
             <a href="MR">영화 리뷰 게시판</a>
             <a href="OTTMR">OTT 게시판</a>

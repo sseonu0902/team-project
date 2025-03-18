@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { UserContext } from "./UserContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./OTTMR.css";
 
 function OTTMR() {
@@ -10,7 +10,7 @@ function OTTMR() {
   return (
     <div>
       <header>
-        <h1>영화 커뮤니티</h1>
+        <h1>MRS</h1>
         <div className="search-container">
           <input
             type="text"
@@ -32,51 +32,52 @@ function OTTMR() {
         {user && <p className="user-nickname">{user.nickname}님</p>}
         {user && <button className="logout-btn" onClick={logout}>로그아웃</button>}
       </header>
+
       <nav>
-        <a href="/main">홈</a>
+        <Link to={user ? "/LoginMain" : "/Main"}>홈</Link>
         <div className="dropdown">
-          <a href="*">리뷰게시판</a>
+          <Link to="/MR">리뷰게시판</Link>
           <div className="dropdown-content">
-            <a href="MR">영화 리뷰 게시판</a>
-            <a href="OTTMR">OTT 게시판</a>
-            <a href="#">시리즈물 게시판</a>
-            <a href="#">자유 게시판</a>
+            <Link to="/MR">영화 리뷰 게시판</Link>
+            <Link to="/OTTMR">OTT 게시판</Link>
+            <Link to="#">시리즈물 게시판</Link>
+            <Link to="#">자유 게시판</Link>
           </div>
         </div>
         <div className="dropdown">
-          <a href="/genre">핫 이슈</a>
+          <Link to="/genre">핫 이슈</Link>
           <div className="dropdown-content">
-            <a href="#">TOP10 영화</a>
-            <a href="#">영화 뉴스</a>
+            <Link to="#">TOP10 영화</Link>
+            <Link to="#">영화 뉴스</Link>
           </div>
         </div>
         <div className="dropdown">
-          <a href="/community">상영 예정작</a>
+          <Link to="/community">상영 예정작</Link>
           <div className="dropdown-content">
-            <a href="#">영화관 상영 예정작</a>
-            <a href="#">OTT 상영 예정작</a>
+            <Link to="#">영화관 상영 예정작</Link>
+            <Link to="#">OTT 상영 예정작</Link>
           </div>
         </div>
         <div className="dropdown">
-          <a href="/profile">OTT관</a>
+          <Link to="/profile">OTT관</Link>
           <div className="dropdown-content">
-            <a href="#">넷플릭스</a>
-            <a href="#">티빙</a>
-            <a href="#">왓챠</a>
-            <a href="#">쿠팡플레이</a>
-            <a href="#">웨이브</a>
-            <a href="#">라프텔</a>
+            <Link to="#">넷플릭스</Link>
+            <Link to="#">티빙</Link>
+            <Link to="#">왓챠</Link>
+            <Link to="#">쿠팡플레이</Link>
+            <Link to="#">웨이브</Link>
+            <Link to="#">라프텔</Link>
           </div>
         </div>
         <div className="dropdown">
-          <a href="/contact">영화관</a>
+          <Link to="/contact">영화관</Link>
           <div className="dropdown-content">
-            <a href="#">CGV</a>
-            <a href="#">롯데시네마</a>
-            <a href="#">메가박스</a>
+            <Link to="#">CGV</Link>
+            <Link to="#">롯데시네마</Link>
+            <Link to="#">메가박스</Link>
           </div>
         </div>
-        <a href="*">고객센터</a>
+        <Link to="*">고객센터</Link>
       </nav>
 
       <div className="main-layout">
@@ -92,7 +93,15 @@ function OTTMR() {
         {/* 메인 콘텐츠 */}
         <main className="main-content">
           <div className="board-header">
-            <h3>영화 커뮤니티</h3>
+            <h3>OTT 영화 커뮤니티</h3>
+
+            <button
+              className="write-button"
+              onClick={() => navigate('/CreatePost')}
+            >
+              글쓰기
+            </button>
+
             <select className="sort-dropdown">
               <option value="views">조회수 높은 순</option>
               <option value="rating">평점 높은 순</option>
@@ -100,44 +109,51 @@ function OTTMR() {
             </select>
           </div>
 
+          <div className="post-list-header">
+            <span>포스터</span>
+            <span>평점</span>
+            <span>제목</span>
+            <span>글쓴이</span>
+            <span>날짜</span>
+            <span>조회</span>
+          </div>
+
           <div className="post-list">
-            <div className="post-item">
-              <div>🎬</div>
-              <div>8.5</div>
-              <div>영화 A</div>
-              <div>사용자1</div>
-              <div>2024-03-10</div>
-              <div>120</div>
+            <div className="post-list-item">
+              <span>🎬</span>
+              <span>8.5</span>
+              <span>영화 A</span>
+              <span>사용자1</span>
+              <span>2024-03-10</span>
+              <span>120</span>
             </div>
-            <div className="post-item">
-              <div>🎥</div>
-              <div>9.2</div>
-              <div>영화 B</div>
-              <div>사용자2</div>
-              <div>2024-03-09</div>
-              <div>150</div>
+            <div className="post-list-item">
+              <span>🎥</span>
+              <span>9.2</span>
+              <span>영화 B</span>
+              <span>사용자2</span>
+              <span>2024-03-09</span>
+              <span>150</span>
             </div>
-            <div className="post-item">
-              <div>📽</div>
-              <div>7.8</div>
-              <div>영화 C</div>
-              <div>사용자3</div>
-              <div>2024-03-11</div>
-              <div>90</div>
+            <div className="post-list-item">
+              <span>🎭</span>
+              <span>7.8</span>
+              <span>영화 C</span>
+              <span>사용자3</span>
+              <span>2024-03-11</span>
+              <span>90</span>
             </div>
           </div>
 
           <div className="pagination">
-            <a href="#">1</a>
-            <a href="#">2</a>
-            <a href="#">3</a>
-            <a href="#">4</a>
-            <a href="#">NEXT</a>
+            <Link to="#">1</Link>
+            <Link to="#">2</Link>
+            <Link to="#">3</Link>
+            <Link to="#">4</Link>
+            <Link to="#">NEXT</Link>
           </div>
         </main>
       </div>
-
-      <button className="write-button" onClick={() => window.location.href = '/CreatePost'}>글쓰기</button>
     </div>
   );
 }

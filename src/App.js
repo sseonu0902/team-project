@@ -10,10 +10,12 @@ import Register from "./Register";
 import Profile from "./Profile";
 import OTTMR from "./OTTMR";
 import MR from "./MR";
+import { PostsProvider } from './PostsContext';
 
 function App() {
   return (
-    <UserProvider>
+    <PostsProvider>
+      <UserProvider>
       <Router>
         <Routes>
           <Route path="/" element={<Main />} />
@@ -31,7 +33,8 @@ function App() {
           <Route path="/mr" element={<MR />} />
         </Routes>
       </Router>
-    </UserProvider>
+      </UserProvider>
+    </PostsProvider> 
   );
 }
 

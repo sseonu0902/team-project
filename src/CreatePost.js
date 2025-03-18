@@ -1,7 +1,8 @@
-import React, { useState,useContext } from "react";
+import React, { useState, useContext } from "react";
+import { PostsContext } from "./PostsContext";
 import { UserContext } from "./UserContext";
 import { useNavigate } from "react-router-dom";
-import { FaStar } from "react-icons/fa"; // react-icons에서 별 아이콘 추가
+import { FaStar } from "react-icons/fa";
 import "./CreatePost.css";
 
 const categories = ["자유게시판", "현재 상영 영화 게시판", "OTT 영화 게시판"];
@@ -25,6 +26,7 @@ const StarRating = ({ rating, setRating }) => {
 
 const CreatePost = () => {
   const { user, logout } = useContext(UserContext);
+  const { addPost } = useContext(PostsContext);
   const [category, setCategory] = useState("현재 상영 영화 리뷰");
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -32,9 +34,30 @@ const CreatePost = () => {
   const [rating, setRating] = useState(0); // 별점 상태 추가
   const navigate = useNavigate();
 
+  if (!user) {
+    return (
+      <div>
+        <h2>로그인 후 게시물을 작성할 수 있습니다.</h2>
+        <button onClick={() => navigate("/login")}>로그인</button>
+      </div>
+    );
+  }
+  
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({ category, title, content, image, rating });
+    const newPost = {
+      id: Date.now(),
+      category,
+      title,
+      content,
+      image,
+      rating,
+      author: user.nickname,
+      date: new Date().toISOString().slice(0, 10),
+      views: 0,
+    };
+    addPost(newPost);
+    navigate("/MR");
   };
 
   const handleImageChange = (e) => {
