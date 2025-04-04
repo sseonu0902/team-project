@@ -13,6 +13,7 @@ export const UserProvider = ({ children }) => {
   }, []);
 
   const login = (userData) => {
+    console.log("로그인한 유저 데이터:", userData);
     localStorage.setItem("user", JSON.stringify(userData));
     setUser(userData);
   };
