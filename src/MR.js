@@ -7,7 +7,6 @@ import "./MR.css";
 function MR() {
   const navigate = useNavigate();
   const { user, logout } = useContext(UserContext);
-
   const [posts, setPosts] = useState([]);
 
   const formatDate = (dateStr) => {
@@ -73,7 +72,15 @@ function MR() {
       </header>
       
       <nav>
-        <a href="/main">홈</a>
+      <a 
+        href="#" 
+        onClick={(e) => {
+          e.preventDefault();
+          navigate(user ? "/LoginMain" : "/Main");
+        }}
+      >
+        홈
+      </a>
         <div className="dropdown">
           <a href="MR">리뷰게시판</a>
           <div className="dropdown-content">
