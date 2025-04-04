@@ -139,7 +139,7 @@ function Profile() {
         </div>
         <div className="profile-info">
           <h3>
-            <strong>이름:</strong> {nickname || "John Doe"}
+            <strong>이름:</strong> {nickname}
           </h3>
           <p>
             <strong>이메일:</strong> {email}

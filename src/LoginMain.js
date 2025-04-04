@@ -74,7 +74,13 @@ function LoginMain() {
           <button className="search-button">검색</button>
         </div>
         {isLoggedIn && nickname && (
-          <p className="user-nickname">{nickname}님</p>
+          <p
+          className="user-nickname"
+          style={{ cursor: "pointer", textDecoration: "underline" }}
+          onClick={() => navigate("/profile")}
+        >
+          {nickname}님
+        </p>
         )}
         <button className="logout-btn" onClick={handleLogout}>
           로그아웃

@@ -178,7 +178,9 @@ function MR() {
                     )}
                   </span>
                   <span>{post.rating}</span>
-                  <span>{post.title}</span>
+                  <span>
+                    <Link to={`/posts/${post.review_id}`}>{post.title}</Link>
+                  </span>
                   <span>{post.nickname}</span>
                   <span>{formatDate(post.created_date)}</span>
                   <span>{post.views}</span>
