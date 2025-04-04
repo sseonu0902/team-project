@@ -109,6 +109,11 @@ app.post("/login", async (req, res) => {
   });
 });
 
+app.get("/check-login", (req, res) => {
+  // 클라이언트에서 로그인한 유저 정보를 로컬 스토리지에 저장한다고 가정
+  res.json({ message: "로그인 상태 확인은 클라이언트에서 관리합니다." });
+});
+
 // 리뷰 등록 API
 app.post("/api/review", async (req, res) => {
   const { title, content, rating, nickname, movie_id, image, category } = req.body;

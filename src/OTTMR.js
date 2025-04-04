@@ -73,7 +73,15 @@ function OTTMR() {
       </header>
 
       <nav>
-        <a href="/main">홈</a>
+      <a 
+        href="#" 
+        onClick={(e) => {
+          e.preventDefault();
+          navigate(user ? "/LoginMain" : "/Main");
+        }}
+      >
+        홈
+      </a>
         <div className="dropdown">
           <a href="MR">리뷰게시판</a>
           <div className="dropdown-content">
