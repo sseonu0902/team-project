@@ -166,6 +166,49 @@ app.get("/api/review", async (req, res) => {
   }
 });
 
+// 게시글 상세 조회
+app.get("/api/review/:id", async (req, res) => {
+  const reviewId = parseInt(req.params.id, 10);
+
+  try {
+    const [rows] = await db.promise().query(
+      `SELECT r.review_id, r.title, r.content, r.rating, r.created_date, r.image, r.views, u.nickname 
+       FROM review r 
+       JOIN users u ON r.user_id = u.user_id 
+       WHERE r.review_id = ?`,
+      [reviewId]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ message: '리뷰를 찾을 수 없습니다.' });
+    }
+
+    res.json(rows[0]); // ✅ 조회수 증가 없음!
+  } catch (err) {
+    console.error('상세 조회 오류:', err);
+    res.status(500).json({ message: "서버 오류 발생" });
+  }
+});
+
+// 조회수 증가 전용 API
+app.post("/api/review/:id/views", async (req, res) => {
+  const reviewId = parseInt(req.params.id, 10);
+  console.log("🔥 조회수 증가 요청 들어옴: reviewId =", reviewId);
+
+  try {
+    await db.promise().query(
+      'UPDATE review SET views = views + 1 WHERE review_id = ?', [reviewId]
+    );
+    res.status(200).json({ message: "조회수 증가 완료" });
+  } catch (err) {
+    console.error("조회수 증가 실패:", err);
+    res.status(500).json({ message: "서버 오류 발생" });
+  }
+});
+
+
+
+
 // 서버 실행
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
