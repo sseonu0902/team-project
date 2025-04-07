@@ -1,8 +1,8 @@
 import React, { useState, useContext } from "react";
-import { PostsContext } from "./PostsContext";
 import { UserContext } from "./UserContext";
 import { useNavigate } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
+import axios from 'axios';
 import "./CreatePost.css";
 
 const categories = ["자유게시판", "현재 상영 영화 게시판", "OTT 영화 게시판"];
@@ -26,12 +26,11 @@ const StarRating = ({ rating, setRating }) => {
 
 const CreatePost = () => {
   const { user, logout } = useContext(UserContext);
-  const { addPost } = useContext(PostsContext);
-  const [category, setCategory] = useState("현재 상영 영화 리뷰");
+  const [category, setCategory] = useState(categories[1]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);
-  const [rating, setRating] = useState(0); // 별점 상태 추가
+  const [rating, setRating] = useState(0);
   const navigate = useNavigate();
 
   if (!user) {
@@ -42,22 +41,30 @@ const CreatePost = () => {
       </div>
     );
   }
-  
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     const newPost = {
-      id: Date.now(),
-      category,
-      title,
-      content,
-      image,
+      movie_id: null,            // 필요하면 영화 ID 연결
+      nickname: user.nickname,   // 닉네임 추가
       rating,
-      author: user.nickname,
-      date: new Date().toISOString().slice(0, 10),
-      views: 0,
+      content,
+      title,
+      image,
+      category,
     };
-    addPost(newPost);
-    navigate("/MR");
+
+    console.log(newPost);
+    
+    try {
+      await axios.post('http://localhost:4000/api/review', newPost);
+      alert('리뷰가 성공적으로 등록되었습니다.');
+      navigate('/MR');
+    } catch (error) {
+      console.error('리뷰 등록 실패:', error);
+      alert('리뷰 등록에 실패했습니다.');
+    }
   };
 
   const handleImageChange = (e) => {
@@ -83,7 +90,7 @@ const CreatePost = () => {
           />
           <button className="search-button">검색</button>
         </div>
-        {!user && (
+        {!user ? (
           <>
             <button className="login-btn" onClick={() => navigate("/login")}>
               로그인
@@ -92,9 +99,14 @@ const CreatePost = () => {
               회원가입
             </button>
           </>
+        ) : (
+          <>
+            <p className="user-nickname">{user.nickname}님</p>
+            <button className="logout-btn" onClick={logout}>
+              로그아웃
+            </button>
+          </>
         )}
-        {user && <p className="user-nickname">{user.nickname}님</p>}
-        {user && <button className="logout-btn" onClick={logout}>로그아웃</button>}
       </header>
 
       <nav>
@@ -151,10 +163,7 @@ const CreatePost = () => {
             <label>게시판 선택:</label>
           </div>
           <div className="review-post-select">
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
+            <select value={category} onChange={(e) => setCategory(e.target.value)}>
               {categories.map((option) => (
                 <option key={option} value={option}>
                   {option}
@@ -178,23 +187,14 @@ const CreatePost = () => {
           <div className="review-image-upload">
             <label>
               {image ? (
-                <img
-                  src={image}
-                  alt="첨부된 이미지"
-                  style={{ width: "100px", height: "auto" }}
-                />
+                <img src={image} alt="첨부된 이미지" style={{ width: "100px", height: "auto" }} />
               ) : (
                 <span>사진 추가</span>
               )}
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleImageChange}
-              />
+              <input type="file" accept="image/*" onChange={handleImageChange} />
             </label>
           </div>
 
-          {/* 별점 UI 추가 */}
           <div className="review-rating">
             <span className="review-rating-label">평점:</span>
             <p>별점을 선택해주세요.</p>

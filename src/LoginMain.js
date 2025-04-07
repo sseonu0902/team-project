@@ -74,7 +74,13 @@ function LoginMain() {
           <button className="search-button">검색</button>
         </div>
         {isLoggedIn && nickname && (
-          <p className="user-nickname">{nickname}님</p>
+          <p
+          className="user-nickname"
+          style={{ cursor: "pointer", textDecoration: "underline" }}
+          onClick={() => navigate("/profile")}
+        >
+          {nickname}님
+        </p>
         )}
         <button className="logout-btn" onClick={handleLogout}>
           로그아웃
@@ -82,7 +88,15 @@ function LoginMain() {
       </header>
 
       <nav>
-        <a href="/main">홈</a>
+      <a 
+        href="#" 
+        onClick={(e) => {
+          e.preventDefault(); 
+          navigate(isLoggedIn ? "/LoginMain" : "/Main"); 
+        }}
+      >
+        홈
+      </a>
         <div className="dropdown">
           <a href="MR">리뷰게시판</a>
           <div className="dropdown-content">

@@ -1,24 +1,52 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
-import { PostsContext } from "./PostsContext";
 import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
 import "./MR.css";
 
 function MR() {
   const navigate = useNavigate();
   const { user, logout } = useContext(UserContext);
-  const { posts, deletePost } = useContext(PostsContext);
+  const [posts, setPosts] = useState([]);
+
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("ko-KR", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+  };
+  
+
+  // 임시 게시글 데이터 (추후 API로 교체 가능)
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const response = await axios.get("http://localhost:4000/api/review", {
+          params: { category: "현재 상영 영화 게시판" } // 영화 리뷰 게시판 카테고리 추가
+        });
+        setPosts(response.data);
+      } catch (error) {
+        console.error("게시물 가져오기 실패:", error);
+      }
+    };
+  
+    fetchPosts();
+  }, []);
+  
 
   const handleDeleteLatestPost = () => {
     if (posts.length > 0) {
-      deletePost(posts[0].id); // 최근 게시물을 삭제
-    } else {
-      alert("삭제할 게시물이 없습니다.");
+      const updatedPosts = [...posts];
+      updatedPosts.pop(); // 마지막 게시글 삭제
+      setPosts(updatedPosts);
     }
   };
 
   return (
     <div>
+      {/* 헤더 */}
       <header>
         <h1>MRS</h1>
         <div className="search-container">
@@ -42,54 +70,63 @@ function MR() {
         {user && <p className="user-nickname">{user.nickname}님</p>}
         {user && <button className="logout-btn" onClick={logout}>로그아웃</button>}
       </header>
-
+      
       <nav>
-        <Link to={user ? "/LoginMain" : "/Main"}>홈</Link>
+      <a 
+        href="#" 
+        onClick={(e) => {
+          e.preventDefault();
+          navigate(user ? "/LoginMain" : "/Main");
+        }}
+      >
+        홈
+      </a>
         <div className="dropdown">
-          <Link to="/MR">리뷰게시판</Link>
+          <a href="MR">리뷰게시판</a>
           <div className="dropdown-content">
-            <Link to="/MR">영화 리뷰 게시판</Link>
-            <Link to="/OTTMR">OTT 게시판</Link>
-            <Link to="#">시리즈물 게시판</Link>
-            <Link to="#">자유 게시판</Link>
+            <a href="MR">영화 리뷰 게시판</a>
+            <a href="OTTMR">OTT 게시판</a>
+            <a href="#">시리즈물 게시판</a>
+            <a href="#">자유 게시판</a>
           </div>
         </div>
         <div className="dropdown">
-          <Link to="/genre">핫 이슈</Link>
+          <a href="/genre">핫 이슈</a>
           <div className="dropdown-content">
-            <Link to="#">TOP10 영화</Link>
-            <Link to="#">영화 뉴스</Link>
+            <a href="#">TOP10 영화</a>
+            <a href="#">영화 뉴스</a>
           </div>
         </div>
         <div className="dropdown">
-          <Link to="/community">상영 예정작</Link>
+          <a href="/community">상영 예정작</a>
           <div className="dropdown-content">
-            <Link to="#">영화관 상영 예정작</Link>
-            <Link to="#">OTT 상영 예정작</Link>
+            <a href="#">영화관 상영 예정작</a>
+            <a href="#">OTT 상영 예정작</a>
           </div>
         </div>
         <div className="dropdown">
-          <Link to="/profile">OTT관</Link>
+          <a href="/profile">OTT관</a>
           <div className="dropdown-content">
-            <Link to="#">넷플릭스</Link>
-            <Link to="#">티빙</Link>
-            <Link to="#">왓챠</Link>
-            <Link to="#">쿠팡플레이</Link>
-            <Link to="#">웨이브</Link>
-            <Link to="#">라프텔</Link>
+            <a href="#">넷플릭스</a>
+            <a href="#">티빙</a>
+            <a href="#">왓챠</a>
+            <a href="#">쿠팡플레이</a>
+            <a href="#">웨이브</a>
+            <a href="#">라프텔</a>
           </div>
         </div>
         <div className="dropdown">
-          <Link to="/contact">영화관</Link>
+          <a href="/contact">영화관</a>
           <div className="dropdown-content">
-            <Link to="#">CGV</Link>
-            <Link to="#">롯데시네마</Link>
-            <Link to="#">메가박스</Link>
+            <a href="#">CGV</a>
+            <a href="#">롯데시네마</a>
+            <a href="#">메가박스</a>
           </div>
         </div>
-        <Link to="*">고객센터</Link>
+        <a href="*">고객센터</a>
       </nav>
 
+      {/* 메인 레이아웃 */}
       <div className="main-layout">
         {/* 사이드바 */}
         <aside className="sidebar">
@@ -119,6 +156,7 @@ function MR() {
             </select>
           </div>
 
+          {/* 게시글 목록 헤더 */}
           <div className="post-list-header">
             <span>포스터</span>
             <span>평점</span>
@@ -128,52 +166,45 @@ function MR() {
             <span>조회</span>
           </div>
 
+          {/* 게시글 목록 */}
           <div className="post-list">
-            <div className="post-list-item">
-              <span>🎬</span>
-              <span>8.5</span>
-              <span>영화 A</span>
-              <span>사용자1</span>
-              <span>2024-03-10</span>
-              <span>120</span>
-            </div>
-            <div className="post-list-item">
-              <span>🎥</span>
-              <span>9.2</span>
-              <span>영화 B</span>
-              <span>사용자2</span>
-              <span>2024-03-09</span>
-              <span>150</span>
-            </div>
-            <div className="post-list-item">
-              <span>🎭</span>
-              <span>7.8</span>
-              <span>영화 C</span>
-              <span>사용자3</span>
-              <span>2024-03-11</span>
-              <span>90</span>
-            </div>
-
-            <div className="post-list">
-              {posts.map((post) => (
-                <div key={post.id} className="post-list-item">
-                  <span>{post.image ? <img src={post.image} alt="포스터" style={{ width: "50px" }} /> : "🎬"}</span>
+            {posts.length === 0 ? (
+              <p className="empty-posts">게시글이 없습니다.</p>
+            ) : (
+              posts.map((post) => (
+                <div key={post.review_id} className="post-list-item">
+                  <span>
+                    {post.image ? (
+                      <img
+                        src={post.image}
+                        alt="포스터"
+                        style={{ width: "50px" }}
+                      />
+                    ) : (
+                      "🎬"
+                    )}
+                  </span>
                   <span>{post.rating}</span>
-                  <span>{post.title}</span>
-                  <span>{post.author}</span>
-                  <span>{post.date}</span>
+                  <span>
+                    <Link to={`/posts/${post.review_id}`}>{post.title}</Link>
+                  </span>
+                  <span>{post.nickname}</span>
+                  <span>{formatDate(post.created_date)}</span>
                   <span>{post.views}</span>
-            </div>
-          ))}
-        </div>
-      </div>
-      <button 
-        style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 999 }}
-        onClick={handleDeleteLatestPost}
-      >
-        최근 게시물 삭제 (테스트용)
-      </button>
+                </div>
+              ))
+            )}
+          </div>
 
+          {/* 최근 게시물 삭제 버튼 */}
+          <button
+            style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 999 }}
+            onClick={handleDeleteLatestPost}
+          >
+            최근 게시물 삭제 (테스트용)
+          </button>
+
+          {/* 페이지네이션 */}
           <div className="pagination">
             <Link to="#">1</Link>
             <Link to="#">2</Link>
