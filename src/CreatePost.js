@@ -3,6 +3,11 @@ import { UserContext } from "./UserContext";
 import { useNavigate } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
 import axios from "axios";
+import React, { useState, useContext } from "react";
+import { UserContext } from "./UserContext";
+import { useNavigate } from "react-router-dom";
+import { FaStar } from "react-icons/fa";
+import axios from 'axios';
 import "./CreatePost.css";
 
 const categories = ["자유게시판", "현재 상영 영화 게시판", "OTT 영화 게시판"];
@@ -24,8 +29,8 @@ const StarRating = ({ rating, setRating }) => (
 
 const CreatePost = () => {
   const { user, logout } = useContext(UserContext);
-  const navigate = useNavigate();
 
+  const navigate = useNavigate();
   const [category, setCategory] = useState(categories[1]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -89,18 +94,49 @@ const CreatePost = () => {
     updated.splice(index, 1);
     setRatings(updated);
   };
+  const [rating, setRating] = useState(0);
+  const navigate = useNavigate();
+
+  if (!user) {
+    return (
+      <div>
+        <h2>로그인 후 게시물을 작성할 수 있습니다.</h2>
+        <button onClick={() => navigate("/login")}>로그인</button>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const newPost = {
       movie_id: null,
       nickname: user.nickname,
       category,
       title,
+      movie_id: null,            // 필요하면 영화 ID 연결
+      nickname: user.nickname,   // 닉네임 추가
+      rating,
       content,
+      title,
       image,
       ratings,
     };
+
+      category,
+    };
+
+    console.log(newPost);
+    
+    try {
+      await axios.post('http://localhost:4000/api/review', newPost);
+      alert('리뷰가 성공적으로 등록되었습니다.');
+      navigate('/MR');
+    } catch (error) {
+      console.error('리뷰 등록 실패:', error);
+      alert('리뷰 등록에 실패했습니다.');
+    }
+  };
 
     try {
       await axios.post("http://localhost:4000/api/review", newPost);
@@ -141,6 +177,23 @@ const CreatePost = () => {
         <button className="logout-btn" onClick={handleLogout}>
           로그아웃
         </button>
+        {!user ? (
+          <>
+            <button className="login-btn" onClick={() => navigate("/login")}>
+              로그인
+            </button>
+            <button className="register-btn" onClick={() => navigate("/register")}>
+              회원가입
+            </button>
+          </>
+        ) : (
+          <>
+            <p className="user-nickname">{user.nickname}님</p>
+            <button className="logout-btn" onClick={logout}>
+              로그아웃
+            </button>
+          </>
+        )}
       </header>
 
       <nav>
@@ -201,6 +254,9 @@ const CreatePost = () => {
               value={category}
               onChange={(e) => setCategory(e.target.value)}
             >
+          </div>
+          <div className="review-post-select">
+            <select value={category} onChange={(e) => setCategory(e.target.value)}>
               {categories.map((option) => (
                 <option key={option} value={option}>
                   {option}
@@ -274,6 +330,23 @@ const CreatePost = () => {
             >
               + 항목 추가
             </button>
+
+          <div className="review-image-upload">
+            <label>
+              {image ? (
+                <img src={image} alt="첨부된 이미지" style={{ width: "100px", height: "auto" }} />
+              ) : (
+                <span>사진 추가</span>
+              )}
+              <input type="file" accept="image/*" onChange={handleImageChange} />
+            </label>
+          </div>
+
+          <div className="review-rating">
+            <span className="review-rating-label">평점:</span>
+            <p>별점을 선택해주세요.</p>
+            <StarRating rating={rating} setRating={setRating} />
+
           </div>
         </div>
 
