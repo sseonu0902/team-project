@@ -2,9 +2,9 @@ import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./MR.css";
+import "./FreeBoard.css";
 
-function MR() {
+function FreeBoard() {
   const navigate = useNavigate();
   const { user, logout } = useContext(UserContext);
   const [posts, setPosts] = useState([]);
@@ -140,7 +140,7 @@ function MR() {
         {/* 메인 콘텐츠 */}
         <main className="main-content">
           <div className="board-header">
-            <h3>영화 커뮤니티</h3>
+            <h3>자유게시판</h3>
 
             <button
               className="write-button"
@@ -218,4 +218,4 @@ function MR() {
   );
 }
 
-export default MR;
+export default FreeBoard;

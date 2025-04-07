@@ -7,7 +7,6 @@ import "./OTTMR.css";
 function OTTMR() {
   const navigate = useNavigate();
   const { user, logout } = useContext(UserContext);
-
   const [posts, setPosts] = useState([]);
 
   const formatDate = (dateStr) => {
@@ -25,7 +24,7 @@ function OTTMR() {
     const fetchPosts = async () => {
       try {
         const response = await axios.get("http://localhost:4000/api/review", {
-          params: { category: "OTT 영화 게시판" } // OTT 게시판 카테고리 추가
+          params: { category: "현재 상영 영화 게시판" } // 영화 리뷰 게시판 카테고리 추가
         });
         setPosts(response.data);
       } catch (error) {
@@ -71,7 +70,7 @@ function OTTMR() {
         {user && <p className="user-nickname">{user.nickname}님</p>}
         {user && <button className="logout-btn" onClick={logout}>로그아웃</button>}
       </header>
-
+      
       <nav>
       <a 
         href="#" 
@@ -160,7 +159,7 @@ function OTTMR() {
           {/* 게시글 목록 헤더 */}
           <div className="post-list-header">
             <span>포스터</span>
-            <span>평점</span>
+            <span>평균평점</span>
             <span>제목</span>
             <span>글쓴이</span>
             <span>날짜</span>
@@ -185,7 +184,7 @@ function OTTMR() {
                       "🎬"
                     )}
                   </span>
-                  <span>{post.rating}</span>
+                  <span>{Number(post.rating).toFixed(1)}</span>
                   <span>
                     <Link to={`/posts/${post.review_id}`}>{post.title}</Link>
                   </span>

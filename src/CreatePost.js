@@ -3,15 +3,18 @@ import { UserContext } from "./UserContext";
 import { useNavigate } from "react-router-dom";
 import { FaStar } from "react-icons/fa";
 import axios from "axios";
-import React, { useState, useContext } from "react";
-import { UserContext } from "./UserContext";
-import { useNavigate } from "react-router-dom";
-import { FaStar } from "react-icons/fa";
-import axios from 'axios';
 import "./CreatePost.css";
 
 const categories = ["자유게시판", "현재 상영 영화 게시판", "OTT 영화 게시판"];
 const ratingAspects = ["스토리", "배우(캐릭터)", "음악(OST)", "몰입도", "연출"];
+
+const ratingTypeMap = {
+  "스토리": 1,
+  "배우(캐릭터)": 2,
+  "음악(OST)": 3,
+  "몰입도": 4,
+  "연출": 5,
+};
 
 const StarRating = ({ rating, setRating }) => (
   <div className="star-rating">
@@ -29,15 +32,13 @@ const StarRating = ({ rating, setRating }) => (
 
 const CreatePost = () => {
   const { user, logout } = useContext(UserContext);
-
   const navigate = useNavigate();
+
   const [category, setCategory] = useState(categories[1]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);
-  const [ratings, setRatings] = useState([
-    { aspect: ratingAspects[0], score: 0 },
-  ]);
+  const [ratings, setRatings] = useState([{ aspect: ratingAspects[0], score: 0 }]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickname] = useState("");
 
@@ -94,50 +95,28 @@ const CreatePost = () => {
     updated.splice(index, 1);
     setRatings(updated);
   };
-  const [rating, setRating] = useState(0);
-  const navigate = useNavigate();
-
-  if (!user) {
-    return (
-      <div>
-        <h2>로그인 후 게시물을 작성할 수 있습니다.</h2>
-        <button onClick={() => navigate("/login")}>로그인</button>
-      </div>
-    );
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
+    const avgRating = ratings.reduce((sum, item) => sum + item.score, 0) / ratings.length;
+  
+    const convertedRatings = ratings.map((item) => ({
+      rating_type_id: ratingTypeMap[item.aspect], // 여기서 변환
+      score: item.score,
+    }));
+  
     const newPost = {
       movie_id: null,
       nickname: user.nickname,
       category,
       title,
-      movie_id: null,            // 필요하면 영화 ID 연결
-      nickname: user.nickname,   // 닉네임 추가
-      rating,
       content,
-      title,
       image,
-      ratings,
+      rating: parseFloat(avgRating.toFixed(1)),
+      ratings: convertedRatings, // 변환된 배열 사용
     };
-
-      category,
-    };
-
-    console.log(newPost);
-    
-    try {
-      await axios.post('http://localhost:4000/api/review', newPost);
-      alert('리뷰가 성공적으로 등록되었습니다.');
-      navigate('/MR');
-    } catch (error) {
-      console.error('리뷰 등록 실패:', error);
-      alert('리뷰 등록에 실패했습니다.');
-    }
-  };
-
+  
     try {
       await axios.post("http://localhost:4000/api/review", newPost);
       alert("리뷰가 성공적으로 등록되었습니다.");
@@ -147,6 +126,8 @@ const CreatePost = () => {
       alert("리뷰 등록에 실패했습니다.");
     }
   };
+  
+  
 
   if (!user) {
     return (
@@ -162,11 +143,7 @@ const CreatePost = () => {
       <header>
         <h1>MRS</h1>
         <div className="search-container">
-          <input
-            type="text"
-            className="search-input"
-            placeholder="검색어를 입력하세요."
-          />
+          <input type="text" className="search-input" placeholder="검색어를 입력하세요." />
           <button className="search-button">검색</button>
         </div>
         {isLoggedIn && nickname && (
@@ -177,27 +154,18 @@ const CreatePost = () => {
         <button className="logout-btn" onClick={handleLogout}>
           로그아웃
         </button>
-        {!user ? (
-          <>
-            <button className="login-btn" onClick={() => navigate("/login")}>
-              로그인
-            </button>
-            <button className="register-btn" onClick={() => navigate("/register")}>
-              회원가입
-            </button>
-          </>
-        ) : (
-          <>
-            <p className="user-nickname">{user.nickname}님</p>
-            <button className="logout-btn" onClick={logout}>
-              로그아웃
-            </button>
-          </>
-        )}
       </header>
-
+      
       <nav>
-        <a href="/LoginMain">홈</a>
+      <a 
+        href="#" 
+        onClick={(e) => {
+          e.preventDefault();
+          navigate(user ? "/LoginMain" : "/Main");
+        }}
+      >
+        홈
+      </a>
         <div className="dropdown">
           <a href="MR">리뷰게시판</a>
           <div className="dropdown-content">
@@ -243,6 +211,8 @@ const CreatePost = () => {
         <a href="*">고객센터</a>
       </nav>
 
+      {/* 네비게이션은 생략 가능 */}
+
       <div className="review-container">
         <h2>리뷰 작성</h2>
 
@@ -250,17 +220,9 @@ const CreatePost = () => {
         <div className="top-row">
           <div className="form-group">
             <label>게시판 선택:</label>
-            <select
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-            >
-          </div>
-          <div className="review-post-select">
             <select value={category} onChange={(e) => setCategory(e.target.value)}>
               {categories.map((option) => (
-                <option key={option} value={option}>
-                  {option}
-                </option>
+                <option key={option} value={option}>{option}</option>
               ))}
             </select>
           </div>
@@ -282,12 +244,12 @@ const CreatePost = () => {
             <label>사진 추가:</label>
             <div className="review-image-upload">
               <label>
-                {image ? <img src={image} alt="첨부 이미지" /> : "이미지 선택"}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                />
+                {image ? (
+                  <img src={image} alt="첨부 이미지" style={{ width: "100px", height: "auto" }} />
+                ) : (
+                  <span>사진 추가</span>
+                )}
+                <input type="file" accept="image/*" onChange={handleImageChange} />
               </label>
             </div>
           </div>
@@ -302,9 +264,7 @@ const CreatePost = () => {
                     onChange={(e) => handleAspectChange(index, e.target.value)}
                   >
                     {ratingAspects.map((aspect) => (
-                      <option key={aspect} value={aspect}>
-                        {aspect}
-                      </option>
+                      <option key={aspect} value={aspect}>{aspect}</option>
                     ))}
                   </select>
                   <button
@@ -323,30 +283,9 @@ const CreatePost = () => {
                 />
               </div>
             ))}
-            <button
-              type="button"
-              className="add-rating-btn"
-              onClick={handleAddRatingField}
-            >
+            <button type="button" className="add-rating-btn" onClick={handleAddRatingField}>
               + 항목 추가
             </button>
-
-          <div className="review-image-upload">
-            <label>
-              {image ? (
-                <img src={image} alt="첨부된 이미지" style={{ width: "100px", height: "auto" }} />
-              ) : (
-                <span>사진 추가</span>
-              )}
-              <input type="file" accept="image/*" onChange={handleImageChange} />
-            </label>
-          </div>
-
-          <div className="review-rating">
-            <span className="review-rating-label">평점:</span>
-            <p>별점을 선택해주세요.</p>
-            <StarRating rating={rating} setRating={setRating} />
-
           </div>
         </div>
 

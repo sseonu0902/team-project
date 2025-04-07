@@ -116,7 +116,7 @@
 .post-list-header,
 .post-list-item {
     display: grid;
-    grid-template-columns: 10fr 5fr 30fr 15fr 10fr 10fr;
+    grid-template-columns: 10fr 7fr 30fr 15fr 10fr 10fr;
     text-align: center;
     align-items: center;
     border-bottom: 1px solid #ddd;

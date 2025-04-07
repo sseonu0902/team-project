@@ -116,10 +116,14 @@ app.get("/check-login", (req, res) => {
 
 // 리뷰 등록 API
 app.post("/api/review", async (req, res) => {
-  const { title, content, rating, nickname, movie_id, image, category } = req.body;
+  const { title, content, ratings, nickname, movie_id, image, category } = req.body;
 
   try {
-    // 닉네임으로 유저 ID 찾기 (DB에서)
+    if (!Array.isArray(ratings) || ratings.length === 0) {
+      return res.status(400).json({ message: "별점 항목이 없습니다." });
+    }
+
+    // 닉네임으로 유저 ID 찾기
     const [user] = await db.promise().query("SELECT user_id FROM users WHERE nickname = ?", [nickname]);
 
     if (user.length === 0) {
@@ -128,18 +132,34 @@ app.post("/api/review", async (req, res) => {
 
     const user_id = user[0].user_id;
 
+    // 평균 평점 계산
+    const totalScore = ratings.reduce((sum, item) => sum + item.score, 0);
+    const averageRating = totalScore / ratings.length;
+
     // 리뷰 저장
-    await db.promise().query(
+    const [result] = await db.promise().query(
       "INSERT INTO review (title, content, rating, user_id, movie_id, image, category) VALUES (?, ?, ?, ?, ?, ?, ?)",
-      [title, content, rating, user_id, movie_id, image || null, category]
+      [title, content, averageRating, user_id, movie_id, image || null, category]
     );
 
+    const reviewId = result.insertId;
+
+    // 항목별 평점 저장 (aspect → rating_type_id)
+    for (const { rating_type_id, score } of ratings) {
+      await db.promise().query(
+        "INSERT INTO review_rating (review_id, rating_type_id, score) VALUES (?, ?, ?)",
+        [reviewId, rating_type_id, score]
+      );
+    }
+
     res.status(201).json({ message: "리뷰 저장 완료" });
+
   } catch (err) {
     console.error("리뷰 저장 오류:", err);
     res.status(500).json({ message: "서버 오류 발생" });
   }
 });
+
 
 //카테고리
 app.get("/api/review", async (req, res) => {
@@ -176,7 +196,8 @@ app.get("/api/review/:id", async (req, res) => {
   const reviewId = parseInt(req.params.id, 10);
 
   try {
-    const [rows] = await db.promise().query(
+    // 1. 리뷰 기본 정보 조회
+    const [reviewRows] = await db.promise().query(
       `SELECT r.review_id, r.title, r.content, r.rating, r.created_date, r.image, r.views, u.nickname 
        FROM review r 
        JOIN users u ON r.user_id = u.user_id 
@@ -184,16 +205,31 @@ app.get("/api/review/:id", async (req, res) => {
       [reviewId]
     );
 
-    if (rows.length === 0) {
+    if (reviewRows.length === 0) {
       return res.status(404).json({ message: '리뷰를 찾을 수 없습니다.' });
     }
 
-    res.json(rows[0]); // ✅ 조회수 증가 없음!
+    const post = reviewRows[0];
+
+    // 2. 평점 항목 조회 (aspect → rating_type.name으로)
+    const [ratings] = await db.promise().query(
+      `SELECT rt.name AS aspect, rr.score 
+       FROM review_rating rr
+       JOIN rating_type rt ON rr.rating_type_id = rt.rating_type_id
+       WHERE rr.review_id = ?`,
+      [reviewId]
+    );
+
+    // 3. 평점도 같이 반환
+    res.json({ ...post, ratings });
+
   } catch (err) {
     console.error('상세 조회 오류:', err);
     res.status(500).json({ message: "서버 오류 발생" });
   }
 });
+
+
 
 // 조회수 증가 전용 API
 app.post("/api/review/:id/views", async (req, res) => {

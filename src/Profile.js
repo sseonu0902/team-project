@@ -11,13 +11,9 @@ function Profile() {
   const [email, setEmail] = useState("john.doe@example.com");
   const [point, setPoint] = useState(150);
   const [mileage, setMileage] = useState(300);
-
   const [profileImage, setProfileImage] = useState(null);
-  const [age, setAge] = useState(25); // 나이 상태 추가
-  const [gender, setGender] = useState("남성"); // 성별 상태 추가
-
-  const [profileImage, setProfileImage] = useState(null); // 업로드한 이미지 상태
- main
+  const [age, setAge] = useState(25);
+  const [gender, setGender] = useState("남성");
 
   useEffect(() => {
     const loginStatus = localStorage.getItem("isLoggedIn") === "true";
@@ -31,11 +27,8 @@ function Profile() {
           setNickname(userData.nickname);
           setEmail(userData.email || "john.doe@example.com");
         }
-
         if (userData.age) setAge(userData.age);
         if (userData.gender) setGender(userData.gender);
-
- main
       }
     }
   }, []);
@@ -48,11 +41,7 @@ function Profile() {
   };
 
   const handleImageClick = () => {
-
     fileInputRef.current.click();
-
-    fileInputRef.current.click(); // 숨겨진 파일 input 열기
- main
   };
 
   const handleImageChange = (e) => {
@@ -67,25 +56,15 @@ function Profile() {
       <header>
         <h1>MRS</h1>
         <div className="search-container">
-          <input
-            type="text"
-            className="search-input"
-            placeholder="검색어를 입력하세요."
-          />
+          <input type="text" className="search-input" placeholder="검색어를 입력하세요." />
           <button className="search-button">검색</button>
         </div>
         {isLoggedIn && nickname && (
-          <p
-            className="user-nickname"
-            style={{ cursor: "pointer", textDecoration: "underline" }}
-            onClick={() => navigate("/profile")}
-          >
+          <p className="user-nickname" style={{ cursor: "pointer", textDecoration: "underline" }} onClick={() => navigate("/profile")}>
             {nickname}님
           </p>
         )}
-        <button className="logout-btn" onClick={handleLogout}>
-          로그아웃
-        </button>
+        <button className="logout-btn" onClick={handleLogout}>로그아웃</button>
       </header>
 
       <nav>
@@ -153,31 +132,12 @@ function Profile() {
           />
         </div>
         <div className="profile-info">
-          <h3>
-
-            <strong>이름:</strong> {nickname || "John Doe"}
-
-            <strong>이름:</strong> {nickname}
- main
-          </h3>
-          <p>
-            <strong>이메일:</strong> {email}
-          </p>
-          <p>
-            <strong>포인트:</strong> {point}
-          </p>
-          <p>
-            <strong>마일리지:</strong> {mileage}
-          </p>
-
-          <p>
-            <strong>나이:</strong> {age}
-          </p>
-          <p>
-            <strong>성별:</strong> {gender}
-          </p>
-
- main
+          <h3><strong>이름:</strong> {nickname || "John Doe"}</h3>
+          <p><strong>이메일:</strong> {email}</p>
+          <p><strong>포인트:</strong> {point}</p>
+          <p><strong>마일리지:</strong> {mileage}</p>
+          <p><strong>나이:</strong> {age}</p>
+          <p><strong>성별:</strong> {gender}</p>
         </div>
         <div className="button-group">
           <button className="profile-btn">프로필 수정</button>

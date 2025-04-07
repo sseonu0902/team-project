@@ -60,7 +60,15 @@ function PostDetail() {
 
       {/* 네비게이션 */}
       <nav>
-        <a href="/main">홈</a>
+      <a 
+        href="#" 
+        onClick={(e) => {
+          e.preventDefault();
+          navigate(user ? "/LoginMain" : "/Main");
+        }}
+      >
+        홈
+      </a>
         <div className="dropdown">
           <a href="/mr">리뷰게시판</a>
           <div className="dropdown-content">
@@ -124,7 +132,20 @@ function PostDetail() {
               <p><strong>작성자:</strong> {post.nickname}</p>
               <p><strong>작성일:</strong> {formatDate(post.created_date)}</p>
               <p><strong>조회수:</strong> {post.views}</p>
-              <p><strong>평점:</strong> {post.rating}</p>
+              <p><strong>평균평점:</strong> {Number(post.rating).toFixed(1)}</p>
+
+              {post.ratings && post.ratings.length > 0 && (
+                <div style={{ marginTop: "10px", marginBottom: "20px" }}>
+                  <h4>항목별 평점</h4>
+                  <ul style={{ listStyle: "none", paddingLeft: 0 }}>
+                    {post.ratings.map((item, index) => (
+                      <li key={index} style={{ marginBottom: "5px" }}>
+                        <strong>{item.aspect}:</strong> {item.score}점
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {post.image && (
                 <img src={post.image} alt="포스터" style={{ width: "200px", margin: "20px 0" }} />
