@@ -1,176 +1,145 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f9f9f9;
-  color: #333;
-}
-
-header {
-  background-color: #3498db;
-  color: #fff;
-  padding: 15px 20px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.menu-button {
-  background-color: #2980b9;
-  color: #fff;
-  border: none;
-  padding: 10px 15px;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.3s ease-in-out;
-}
-
-.menu-button:hover {
-  background-color: #1f618d;
-  transform: scale(1.05);
-}
-
-.overlay {
-  display: block;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.3);
-  z-index: 999;
-}
-
-.container {
-  max-width: 800px;
-  margin: 40px auto;
-  background-color: #fff;
-  border-radius: 8px;
-  padding: 20px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-h1 {
-  text-align: center;
-  color: #ffffff;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-}
-
-label {
-  font-size: 14px;
-  margin-bottom: 5px;
-  color: #495057;
-}
-
-input, textarea, select {
-  font-size: 16px;
-  padding: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  width: 100%;
-}
-
-textarea {
-  resize: vertical;
-  height: 150px;
-}
-
-button {
-  background-color: #3498db;
-  color: #fff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-button:hover {
-  background-color: #2980b9;
-}
-
 .review-container {
-  max-width: 1000px;
-  background: white;
-  padding: 20px;
-  margin: 30px auto;
-  border-radius: 10px;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  width: 1200px;
+  margin: 120px auto;
+  margin-top: 160px;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .review-container h2 {
-  text-align: center;
+  text-align: left;
+  font-size: 24px;
   color: #333;
+  margin-bottom: 30px;
 }
 
-.review-form-wrapper {
+/* 게시판 선택 + 제목 */
+.top-row {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+
+.middle-row {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+
+.form-group {
   display: flex;
   flex-direction: column;
+  gap: 8px;
+  flex: 1;
 }
 
-.review-post-name, .review-movie-post, .review-image-upload, .review-rating, .review {
-  margin-bottom: 10px;
-  font-weight: bold;
-}
-
-/* 입력 필드 스타일 */
-input, select, textarea {
+.form-group.full-width {
   width: 100%;
+}
+
+.form-group select,
+.form-group input,
+.form-group textarea {
   padding: 10px;
   border: 1px solid #ccc;
-  border-radius: 5px;
+  border-radius: 6px;
+  font-size: 15px;
 }
 
-textarea {
-  resize: none;
+.form-group textarea {
+  resize: vertical;
+  height: 180px;
 }
 
-/* 이미지 업로드 */
-.review-image-upload label {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #ecf0f1;
-  padding: 10px;
-  border-radius: 5px;
+/* 사진 */
+.review-image-upload {
+  width: 250px;
+  height: 150px;
+  border: 2px dashed #aaa;
+  border-radius: 10px;
+  background-color: #f9f9f9;
   cursor: pointer;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.review-image-upload label {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #777;
+  font-size: 14px;
+}
+
+.review-image-upload img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .review-image-upload input {
   display: none;
 }
 
-/* 별점 스타일 */
 .star-rating {
   display: flex;
-  justify-content: center;
   gap: 5px;
+  align-items: center;
 }
 
-.review-rating-label {
-  font-size: 16px;
-  font-weight: bold;
+.rating-select-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-/* 제출 버튼 */
-.review-story button {
+.remove-rating-btn {
+  background-color: #ff4d4f;
+  border: none;
+  color: white;
+  font-size: 14px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.remove-rating-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.add-rating-btn {
+  margin-top: 10px;
+  background-color: #eee;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.review-submit {
+  margin-top: 20px;
+}
+
+.review-submit button {
   width: 100%;
-  padding: 10px;
+  padding: 14px;
   background-color: #2980b9;
   color: white;
-  font-size: 16px;
   border: none;
-  border-radius: 5px;
+  border-radius: 8px;
+  font-size: 16px;
   cursor: pointer;
-  margin-top: 10px;
-}
-
-.review-story button:hover {
-  background-color: #1a5276;
 }
