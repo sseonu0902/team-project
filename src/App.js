@@ -12,6 +12,7 @@ import OTTMR from "./OTTMR";
 import MR from "./MR";
 import { PostsProvider } from './PostsContext';
 import PostDetail from './PostDetail';
+import FreeBoard from './FreeBoard';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           <Route path="/ottmr" element={<OTTMR />} />
           {/* LoginMain 라우트 추가 */}
           <Route path="/mr" element={<MR />} />
+          <Route path="/freeboard" element={<FreeBoard />} />
           <Route path="/posts/:id" element={<PostDetail />} />
         </Routes>
       </Router>

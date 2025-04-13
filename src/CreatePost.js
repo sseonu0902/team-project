@@ -171,8 +171,7 @@ const CreatePost = () => {
           <div className="dropdown-content">
             <a href="MR">영화 리뷰 게시판</a>
             <a href="OTTMR">OTT 게시판</a>
-            <a href="#">시리즈물 게시판</a>
-            <a href="#">자유 게시판</a>
+            <a href="FreeBoard">자유 게시판</a>
           </div>
         </div>
         <div className="dropdown">
