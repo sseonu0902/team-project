@@ -24,7 +24,7 @@ function OTTMR() {
     const fetchPosts = async () => {
       try {
         const response = await axios.get("http://localhost:4000/api/review", {
-          params: { category: "현재 상영 영화 게시판" } // 영화 리뷰 게시판 카테고리 추가
+          params: { category: "OTT 영화 게시판" } // 영화 리뷰 게시판 카테고리 추가
         });
         setPosts(response.data);
       } catch (error) {
@@ -34,15 +34,6 @@ function OTTMR() {
   
     fetchPosts();
   }, []);
-  
-
-  const handleDeleteLatestPost = () => {
-    if (posts.length > 0) {
-      const updatedPosts = [...posts];
-      updatedPosts.pop(); // 마지막 게시글 삭제
-      setPosts(updatedPosts);
-    }
-  };
 
   return (
     <div>
@@ -86,8 +77,7 @@ function OTTMR() {
           <div className="dropdown-content">
             <a href="MR">영화 리뷰 게시판</a>
             <a href="OTTMR">OTT 게시판</a>
-            <a href="#">시리즈물 게시판</a>
-            <a href="#">자유 게시판</a>
+            <a href="FreeBoard">자유 게시판</a>
           </div>
         </div>
         <div className="dropdown">
@@ -195,14 +185,6 @@ function OTTMR() {
               ))
             )}
           </div>
-
-          {/* 최근 게시물 삭제 버튼 */}
-          <button
-            style={{ position: "fixed", bottom: "20px", right: "20px", zIndex: 999 }}
-            onClick={handleDeleteLatestPost}
-          >
-            최근 게시물 삭제 (테스트용)
-          </button>
 
           {/* 페이지네이션 */}
           <div className="pagination">

@@ -98,6 +98,7 @@ app.post("/login", async (req, res) => {
       success: true,
       message: "로그인 성공!",
       user: {
+        user_id: user.user_id,
         name: user.name,
         nickname: user.nickname,
         email: user.email,
@@ -247,6 +248,52 @@ app.post("/api/review/:id/views", async (req, res) => {
   }
 });
 
+//댓글
+app.post("/api/review/:id/comments", async (req, res) => {
+  const reviewId = req.params.id;
+  const { userId, content } = req.body;
+
+  if (!userId || !content) {
+    return res.status(400).json({ error: "userId, content는 필수입니다." });
+  }
+
+  try {
+    const now = new Date(); // 현재 시간 포함
+    await db.promise().execute(
+      `INSERT INTO comment (user_id, review_id, content, created_date)
+       VALUES (?, ?, ?, ?)`,
+      [userId, reviewId, content, now]
+    );
+
+    res.status(201).json({ message: "댓글 작성 완료" });
+  } catch (err) {
+    console.error("댓글 작성 실패:", err);
+    res.status(500).json({ error: "댓글 작성 실패" });
+  }
+});
+
+
+
+//댓글 목록 불러오기
+app.get("/api/review/:id/comments", async (req, res) => {
+  const reviewId = req.params.id;
+
+  try {
+    const [rows] = await db.promise().execute(
+      `SELECT c.comment_id, c.content, c.created_date, u.nickname
+       FROM comment c
+       LEFT JOIN users u ON c.user_id = u.user_id
+       WHERE c.review_id = ?
+       ORDER BY c.created_date DESC`,
+      [reviewId]    
+    );
+
+    res.json(rows);
+  } catch (err) {
+    console.error("댓글 조회 실패:", err);
+    res.status(500).json({ error: "댓글 조회 실패" });
+  }
+});
 
 
 
