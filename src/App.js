@@ -28,7 +28,6 @@ function App() {
           <Route path="/genre" element={<Genre />} /> {/* 소문자로 변경 */}
           <Route path="/loginmain" element={<LoginMain />} />{" "}
           <Route path="/createPost" element={<CreatePost />} />{" "}
-          <Route path="/register" element={<Register />} />{" "}
           <Route path="/profile" element={<Profile />} />{" "}
           <Route path="/ottmr" element={<OTTMR />} />
           {/* LoginMain 라우트 추가 */}
