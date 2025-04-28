@@ -12,6 +12,8 @@ import {
   Legend,
 } from "chart.js";
 import "./PostDetail.css";
+import { Link } from "react-router-dom";
+
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
@@ -110,42 +112,51 @@ function PostDetail() {
       </header>
 
       <nav>
-        <a href="#" onClick={(e) => { e.preventDefault(); navigate(user ? "/LoginMain" : "/Main"); }}>홈</a>
-        <div className="dropdown">
-          <a href="/mr">리뷰게시판</a>
-          <div className="dropdown-content">
-            <a href="MR">영화 리뷰 게시판</a>
-            <a href="OTTMR">OTT 게시판</a>
-            <a href="FreeBoard">자유 게시판</a>
-          </div>
-        </div>
-        <div className="dropdown">
-          <a href="/genre">핫 이슈</a>
-          <div className="dropdown-content">
-            <a href="#">TOP10 영화</a>
-            <a href="#">영화 뉴스</a>
-          </div>
-        </div>
-        <div className="dropdown">
-          <a href="/community">상영 예정작</a>
-          <div className="dropdown-content">
-            <a href="#">영화관 상영 예정작</a>
-            <a href="#">OTT 상영 예정작</a>
-          </div>
-        </div>
-        <div className="dropdown">
-          <a href="/profile">OTT관</a>
-          <div className="dropdown-content">
-            <a href="#">넷플릭스</a>
-            <a href="#">티빙</a>
-            <a href="#">왓챠</a>
-            <a href="#">쿠팡플레이</a>
-            <a href="#">웨이브</a>
-            <a href="#">라프텔</a>
-          </div>
-        </div>
-        <a href="/contact">고객센터</a>
-      </nav>
+  <Link to={user ? "/LoginMain" : "/Main"}>홈</Link>
+  <div className="dropdown">
+    <Link to="/MR">리뷰게시판</Link>
+    <div className="dropdown-content">
+      <Link to="/MR">영화 리뷰 게시판</Link>
+      <Link to="/OTTMR">OTT 게시판</Link>
+      <Link to="/FreeBoard">자유 게시판</Link>
+    </div>
+  </div>
+  <div className="dropdown">
+    <Link to="/genre">핫 이슈</Link>
+    <div className="dropdown-content">
+      <Link to="#">TOP10 영화</Link>
+      <Link to="#">영화 뉴스</Link>
+    </div>
+  </div>
+  <div className="dropdown">
+    <Link to="/community">상영 예정작</Link>
+    <div className="dropdown-content">
+      <Link to="#">영화관 상영 예정작</Link>
+      <Link to="#">OTT 상영 예정작</Link>
+    </div>
+  </div>
+  <div className="dropdown">
+    <Link to="/profile">OTT관</Link>
+    <div className="dropdown-content">
+      <Link to="#">넷플릭스</Link>
+      <Link to="#">티빙</Link>
+      <Link to="#">왓챠</Link>
+      <Link to="#">쿠팡플레이</Link>
+      <Link to="#">웨이브</Link>
+      <Link to="#">라프텔</Link>
+    </div>
+  </div>
+  <div className="dropdown">
+    <Link to="/contact">영화관</Link>
+    <div className="dropdown-content">
+      <Link to="#">CGV</Link>
+      <Link to="#">롯데시네마</Link>
+      <Link to="#">메가박스</Link>
+    </div>
+  </div>
+  <Link to="*">고객센터</Link>
+</nav>
+
 
       <div className="main-layout">
         <aside className="sidebar">
