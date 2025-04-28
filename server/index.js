@@ -4,23 +4,40 @@ const bcrypt = require("bcrypt");
 const cors = require("cors"); 
 const bodyParser = require("body-parser");
 require("dotenv").config();
+const path = require('path');
 
 const app = express();
 
-app.use(cors());
-app.use(express.json({ limit: '50mb' }));
-
+// CORS 설정
 const corsOptions = {
-  origin: "http://localhost:3000", 
-  methods: "GET,POST",
+  origin: ['http://localhost:3000', 'http://localhost:4000'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 600
 };
+
 app.use(cors(corsOptions));
+app.use(express.json({ limit: '50mb' }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// 에러 처리 미들웨어
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({ 
+    success: false,
+    message: '서버 오류가 발생했습니다.',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
 
 // MySQL 연결 설정
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "1234",
+  password: "DDelicious1010!@",
   database: "mydatabase",
 });
 
@@ -295,6 +312,102 @@ app.get("/api/review/:id/comments", async (req, res) => {
   }
 });
 
+// 사용자 정보 가져오기 API
+app.get("/api/user/:email", async (req, res) => {
+  const { email } = req.params;
+  
+  try {
+    const [user] = await db.promise().query(
+      "SELECT nickname, email, point, mileage, age, gender FROM users WHERE email = ?",
+      [email]
+    );
+
+    if (user.length === 0) {
+      return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
+    }
+
+    res.json(user[0]);
+  } catch (error) {
+    console.error("사용자 정보 조회 오류:", error);
+    res.status(500).json({ message: "서버 오류가 발생했습니다." });
+  }
+});
+
+// 비밀번호 확인 API
+app.post("/api/verify-password", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const [user] = await db.promise().query(
+      "SELECT password FROM users WHERE email = ?",
+      [email]
+    );
+
+    if (user.length === 0) {
+      return res.status(404).json({ 
+        success: false,
+        message: "사용자를 찾을 수 없습니다." 
+      });
+    }
+
+    const isPasswordMatch = await bcrypt.compare(password, user[0].password);
+    
+    res.json({
+      success: true,
+      isMatch: isPasswordMatch
+    });
+  } catch (error) {
+    console.error("비밀번호 확인 오류:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "서버 오류가 발생했습니다." 
+    });
+  }
+});
+
+// 비밀번호 재설정 API
+app.post("/api/reset-password", async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  try {
+    const [user] = await db.promise().query(
+      "SELECT * FROM users WHERE email = ?",
+      [email]
+    );
+
+    if (user.length === 0) {
+      return res.status(404).json({ 
+        success: false,
+        message: "사용자를 찾을 수 없습니다." 
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    
+    await db.promise().query(
+      "UPDATE users SET password = ? WHERE email = ?",
+      [hashedPassword, email]
+    );
+
+    res.json({
+      success: true,
+      message: "비밀번호가 성공적으로 변경되었습니다."
+    });
+  } catch (error) {
+    console.error("비밀번호 재설정 오류:", error);
+    res.status(500).json({ 
+      success: false,
+      message: "서버 오류가 발생했습니다." 
+    });
+  }
+});
+
+app.use(express.static(path.join(__dirname, '../build')));
+
+// 라우트 핸들링 - 모든 요청에 대해 index.html 제공
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../build/index.html'));
+});
 
 
 // 서버 실행

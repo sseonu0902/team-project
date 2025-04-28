@@ -8,6 +8,7 @@ import LoginMain from "./LoginMain"; // LoginMain 컴포넌트 추가
 import CreatePost from "./CreatePost";
 import Register from "./Register";
 import Profile from "./Profile";
+import EditProfile from "./EditProfile";
 import OTTMR from "./OTTMR";
 import MR from "./MR";
 import { PostsProvider } from './PostsContext';
@@ -30,6 +31,7 @@ function App() {
           <Route path="/createPost" element={<CreatePost />} />{" "}
           <Route path="/register" element={<Register />} />{" "}
           <Route path="/profile" element={<Profile />} />{" "}
+          <Route path="/edit-profile" element={<EditProfile />} />
           <Route path="/ottmr" element={<OTTMR />} />
           {/* LoginMain 라우트 추가 */}
           <Route path="/mr" element={<MR />} />

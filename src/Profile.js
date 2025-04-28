@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./Profile.css";
+import axios from 'axios';
+
+// API 기본 URL 설정
+const API_BASE_URL = 'http://localhost:4000';
 
 function Profile() {
   const navigate = useNavigate();
@@ -8,12 +12,14 @@ function Profile() {
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickname] = useState("");
-  const [email, setEmail] = useState("john.doe@example.com");
-  const [point, setPoint] = useState(150);
-  const [mileage, setMileage] = useState(300);
+  const [email, setEmail] = useState("");
+  const [point, setPoint] = useState(0);
+  const [mileage, setMileage] = useState(0);
   const [profileImage, setProfileImage] = useState(null);
-  const [age, setAge] = useState(25);
-  const [gender, setGender] = useState("남성");
+  const [age, setAge] = useState("");
+  const [gender, setGender] = useState("");
+  const [level, setLevel] = useState(1);
+  const [nextLevelPoints, setNextLevelPoints] = useState(200);
 
   useEffect(() => {
     const loginStatus = localStorage.getItem("isLoggedIn") === "true";
@@ -22,13 +28,46 @@ function Profile() {
     if (loginStatus) {
       const storedUser = localStorage.getItem("user");
       if (storedUser) {
-        const userData = JSON.parse(storedUser);
-        if (userData.nickname) {
-          setNickname(userData.nickname);
-          setEmail(userData.email || "john.doe@example.com");
+        try {
+          const userData = JSON.parse(storedUser);
+          setNickname(userData.nickname || "");
+          setEmail(userData.email || "");
+          
+          // 서버에서 최신 사용자 정보 가져오기
+          const fetchUserData = async () => {
+            try {
+              const response = await axios.get(`${API_BASE_URL}/api/user/${userData.email}`, {
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Accept': 'application/json'
+                }
+              });
+              
+              if (response.data) {
+                const serverData = response.data;
+                console.log('서버에서 받은 사용자 데이터:', serverData); // 디버깅용 로그
+                setPoint(serverData.point || 0);
+                setMileage(serverData.mileage || 0);
+                setAge(serverData.age ? serverData.age.toString() : "");
+                setGender(serverData.gender || "");
+                
+                // 포인트에 따른 레벨 계산
+                const calculatedLevel = Math.floor((serverData.point || 0) / 100) + 1;
+                setLevel(calculatedLevel);
+                setNextLevelPoints(calculatedLevel * 100);
+              }
+            } catch (error) {
+              console.error('Error fetching user data:', error);
+              if (error.response) {
+                console.error('Error response:', error.response.data);
+              }
+            }
+          };
+          
+          fetchUserData();
+        } catch (error) {
+          console.error('Error parsing user data:', error);
         }
-        if (userData.age) setAge(userData.age);
-        if (userData.gender) setGender(userData.gender);
       }
     }
   }, []);
@@ -49,6 +88,19 @@ function Profile() {
     if (file) {
       setProfileImage(URL.createObjectURL(file));
     }
+  };
+
+  const getLevelTitle = (level) => {
+    if (level < 3) return "초보 리뷰어";
+    if (level < 5) return "중급 리뷰어";
+    if (level < 7) return "고급 리뷰어";
+    return "마스터 리뷰어";
+  };
+
+  const calculateProgress = () => {
+    const currentLevelPoints = (level - 1) * 100;
+    const progress = ((point - currentLevelPoints) / (nextLevelPoints - currentLevelPoints)) * 100;
+    return Math.min(100, Math.max(0, progress));
   };
 
   return (
@@ -130,17 +182,56 @@ function Profile() {
             onChange={handleImageChange}
           />
         </div>
-        <div className="profile-info">
-          <h3><strong>이름:</strong> {nickname || "John Doe"}</h3>
-          <p><strong>이메일:</strong> {email}</p>
-          <p><strong>포인트:</strong> {point}</p>
-          <p><strong>마일리지:</strong> {mileage}</p>
-          <p><strong>나이:</strong> {age}</p>
-          <p><strong>성별:</strong> {gender}</p>
+        
+        <div className="level-info">
+          <div className="level-header">
+            <div className="level-title-container">
+              <div className="level-title">{getLevelTitle(level)}</div>
+              <div className="level-text">Lv.{level}</div>
+            </div>
+            <div className="point-info">
+              <span>현재: {point}P</span>
+              <span>다음 레벨까지: {nextLevelPoints - point}P</span>
+            </div>
+          </div>
+          <div className="level-container">
+            <div className="level-bar">
+              <div className="level-progress" style={{ width: `${calculateProgress()}%` }}></div>
+            </div>
+          </div>
         </div>
-        <div className="button-group">
-          <button className="profile-btn">프로필 수정</button>
-          <button className="profile-btn">마일리지 내역</button>
+
+        <div className="profile-info">
+          <div className="info-row">
+            <span className="info-label">닉네임:</span>
+            <span className="info-value">{nickname}</span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">이메일:</span>
+            <span className="info-value">{email}</span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">나이:</span>
+            <span className="info-value">{age ? `${age}세` : "미입력"}</span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">성별:</span>
+            <span className="info-value">
+              {gender === 'M' ? '남성' : gender === 'F' ? '여성' : '미입력'}
+            </span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">마일리지:</span>
+            <span className="info-value">{mileage}P</span>
+          </div>
+          <div className="button-container">
+            <button className="edit-profile-btn" onClick={() => navigate('/edit-profile')}>
+              프로필 수정
+            </button>
+            <button className="mileage-btn" onClick={() => navigate('/mileage-history')}>
+              마일리지 내역
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -1,37 +1,48 @@
 // Login.js
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";  // axios 추가
 import "./Login.css";
+import axios from 'axios';
+
+// API 기본 URL 설정
+const API_BASE_URL = 'http://localhost:4000';
 
 function Login() {
-  const [email, setEmail] = useState("");  // 사용자 이메일
-  const [password, setPassword] = useState("");  // 사용자 비밀번호
-  const [error, setError] = useState("");  // 로그인 오류 상태
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
     try {
-      // 서버로 로그인 요청 보내기
-      const response = await axios.post("http://localhost:4000/login", {
+      const response = await axios.post(`${API_BASE_URL}/login`, {
         email,
-        password,
+        password
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
       });
 
       if (response.data.success) {
-        console.log("로그인 성공! 받은 사용자 정보:", response.data.user);
-        // 로그인 성공 시 모든 사용자 정보 저장
         localStorage.setItem("isLoggedIn", "true");
-        localStorage.setItem("user", JSON.stringify(response.data.user)); // 로컬 스토리지에 사용자 정보 저장
-        navigate("/loginmain");  // 로그인 후 이동할 페이지
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        console.log("로그인 성공:", response.data.user);
+        navigate("/LoginMain");
       } else {
-        setError(response.data.message);
+        setError(response.data.message || "로그인에 실패했습니다.");
       }
     } catch (error) {
-      console.error("로그인 오류:", error);
-      setError("서버 오류가 발생했습니다.");
+      console.error('Login error:', error);
+      if (error.response) {
+        setError(error.response.data.message || "서버 오류가 발생했습니다.");
+      } else {
+        setError("서버와 연결할 수 없습니다.");
+      }
     }
   };
 
@@ -102,7 +113,7 @@ function Login() {
       {/* 로그인 오류 메시지 표시 */}
       {error && <p className="error">{error}</p>}
 
-      <form id="login-form" onSubmit={handleLogin}>
+      <form id="login-form" onSubmit={handleSubmit}>
         <label htmlFor="email">이메일</label>
         <input
           type="email"

@@ -1,0 +1,154 @@
+.edit-profile-page {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+}
+
+.edit-profile-container {
+  width: 700px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  padding: 40px;
+  position: relative;
+}
+
+.edit-profile-container h2 {
+  color: #333;
+  margin-bottom: 30px;
+  text-align: center;
+  font-size: 1.5em;
+  font-weight: 600;
+}
+
+.profile-info-container {
+  display: flex;
+  gap: 40px;
+}
+
+.fixed-info {
+  width: 200px;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #e9ecef;
+}
+
+.fixed-info h3 {
+  color: #5d9cec;
+  margin-bottom: 15px;
+  font-size: 1.2em;
+}
+
+.fixed-info p {
+  margin: 10px 0;
+  color: #555;
+  font-size: 1.1em;
+}
+
+.edit-form {
+  width: 100%;
+  position: relative;
+  padding-bottom: 30px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  color: #555;
+  font-size: 0.95em;
+  font-weight: 500;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95em;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+  border-color: #5d9cec;
+  outline: none;
+}
+
+.form-group input:disabled {
+  background-color: #f8f9fa;
+  cursor: not-allowed;
+}
+
+.form-group input::placeholder {
+  color: #aaa;
+  font-size: 0.9em;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.save-btn,
+.cancel-btn {
+  width: 100px;
+  padding: 8px 0;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-btn {
+  background-color: #5d9cec;
+  color: white;
+}
+
+.cancel-btn {
+  background-color: #6c757d;
+  color: white;
+}
+
+.save-btn:hover {
+  background-color: #4a8bd4;
+}
+
+.cancel-btn:hover {
+  background-color: #5a6268;
+}
+
+.delete-account-link {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  font-size: 0.8em;
+  color: #dc3545;
+  cursor: pointer;
+  text-decoration: underline;
+  opacity: 0.7;
+  transition: opacity 0.2s ease;
+}
+
+.delete-account-link:hover {
+  opacity: 1;
+}
+
+.error-message {
+  color: #dc3545;
+  margin-bottom: 20px;
+  text-align: center;
+  padding: 10px;
+  background-color: #fff3f3;
+  border-radius: 6px;
+  font-size: 0.9em;
+}
+
+/* 헤더와 네비게이션 스타일은 기존 CSS에서 재사용 */ 
