@@ -17,7 +17,6 @@ function MR() {
       day: "2-digit",
     });
   };
-  
 
   // 임시 게시글 데이터 (추후 API로 교체 가능)
   useEffect(() => {
@@ -31,7 +30,7 @@ function MR() {
         console.error("게시물 가져오기 실패:", error);
       }
     };
-  
+
     fetchPosts();
   }, []);
 
@@ -58,20 +57,24 @@ function MR() {
             </button>
           </>
         )}
-        {user && <p className="user-nickname">{user.nickname}님</p>}
+        {user && (
+          <p className="user-nickname">
+            <Link to="/profile">{user.nickname}님</Link>
+          </p>
+        )}
         {user && <button className="logout-btn" onClick={logout}>로그아웃</button>}
       </header>
-      
+
       <nav>
-      <a 
-        href="#" 
-        onClick={(e) => {
-          e.preventDefault();
-          navigate(user ? "/LoginMain" : "/Main");
-        }}
-      >
-        홈
-      </a>
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(user ? "/LoginMain" : "/Main");
+          }}
+        >
+          홈
+        </a>
         <div className="dropdown">
           <a href="MR">리뷰게시판</a>
           <div className="dropdown-content">

@@ -5,6 +5,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 require("dotenv").config();
 const path = require('path');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 
@@ -37,7 +38,7 @@ app.use((err, req, res, next) => {
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "DDelicious1010!@",
+  password: "1234",
   database: "mydatabase",
 });
 
@@ -126,6 +127,172 @@ app.post("/login", async (req, res) => {
     });
   });
 });
+
+// 레벨 계산 함수
+const calculateLevel = (points) => {
+  let level = 0;
+  let levelPoints = 0;
+  
+  if (points <= 1000) {
+    level = Math.floor(points / 100) + 1; // 🎬 초보 관람객
+  } else if (points <= 2400) {
+    level = Math.floor((points - 1000) / 100) + 11; // 🍿 시사회 출입자
+  } else if (points <= 4000) {
+    level = Math.floor((points - 2400) / 100) + 21; // 🎥 영화 평론가
+  } else if (points <= 6800) {
+    level = Math.floor((points - 4000) / 200) + 31; // 🧠 해석 장인
+  }
+  
+  return level;
+};
+
+// 리뷰 작성 API (포인트 지급 및 레벨 업데이트)
+app.post('/review', (req, res) => {
+  const { userId, title, content, movieId } = req.body;
+  
+  const insertReviewQuery = 'INSERT INTO reviews (userId, title, content, movieId) VALUES (?, ?, ?, ?)';
+  db.query(insertReviewQuery, [userId, title, content, movieId], (err, results) => {
+    if (err) return res.status(500).send('Error saving review');
+    
+    // 리뷰 작성 후 포인트 지급
+    const pointsForReview = 50;  // 리뷰 당 포인트
+    const updatePointsQuery = 'UPDATE users SET points = points + ? WHERE id = ?';
+    db.query(updatePointsQuery, [pointsForReview, userId], (err, results) => {
+      if (err) return res.status(500).send('Error updating points');
+      
+      // 레벨 계산
+      const selectUserQuery = 'SELECT points FROM users WHERE id = ?';
+      db.query(selectUserQuery, [userId], (err, results) => {
+        if (err) return res.status(500).send('Error fetching user points');
+        
+        const points = results[0].points;
+        const newLevel = calculateLevel(points);
+        
+        const updateLevelQuery = 'UPDATE users SET level = ? WHERE id = ?';
+        db.query(updateLevelQuery, [newLevel, userId], (err, results) => {
+          if (err) return res.status(500).send('Error updating level');
+          res.status(200).send('Review posted, points awarded, and level updated');
+        });
+      });
+    });
+  });
+});
+
+// 조회수 증가 API (포인트 지급 및 레벨 업데이트)
+app.post('/increment-view', (req, res) => {
+  const { reviewId, userId } = req.body;
+
+  const incrementViewsQuery = 'UPDATE reviews SET views = views + 1 WHERE id = ?';
+  db.query(incrementViewsQuery, [reviewId], (err, results) => {
+    if (err) return res.status(500).send('Error incrementing views');
+    
+    // 조회수가 100의 배수가 되면 포인트 지급
+    const checkViewQuery = 'SELECT views FROM reviews WHERE id = ?';
+    db.query(checkViewQuery, [reviewId], (err, results) => {
+      if (err) return res.status(500).send('Error checking views');
+      
+      const views = results[0].views;
+      if (views % 100 === 0) {
+        const pointsForViews = 50;  // 조회수 100당 50포인트
+        db.query('UPDATE users SET points = points + ? WHERE id = ?', [pointsForViews, userId], (err, results) => {
+          if (err) return res.status(500).send('Error updating points for views');
+          
+          // 레벨 계산
+          const selectUserQuery = 'SELECT points FROM users WHERE id = ?';
+          db.query(selectUserQuery, [userId], (err, results) => {
+            if (err) return res.status(500).send('Error fetching user points');
+            
+            const points = results[0].points;
+            const newLevel = calculateLevel(points);
+            
+            const updateLevelQuery = 'UPDATE users SET level = ? WHERE id = ?';
+            db.query(updateLevelQuery, [newLevel, userId], (err, results) => {
+              if (err) return res.status(500).send('Error updating level');
+              res.status(200).send('View count updated, points awarded, and level updated');
+            });
+          });
+        });
+      } else {
+        res.status(200).send('View count updated');
+      }
+    });
+  });
+});
+
+// 출석 체크 API (포인트 지급 및 레벨 업데이트)
+app.post('/attendance', (req, res) => {
+  const { userId } = req.body;
+
+  const currentDate = new Date().toISOString().split('T')[0]; // 오늘 날짜
+  const checkAttendanceQuery = 'SELECT * FROM attendance WHERE userId = ? AND date = ?';
+  db.query(checkAttendanceQuery, [userId, currentDate], (err, results) => {
+    if (err) return res.status(500).send('Error checking attendance');
+    
+    if (results.length === 0) {
+      const insertAttendanceQuery = 'INSERT INTO attendance (userId, date) VALUES (?, ?)';
+      db.query(insertAttendanceQuery, [userId, currentDate], (err, results) => {
+        if (err) return res.status(500).send('Error saving attendance');
+        
+        // 출석 체크 후 포인트 지급
+        const pointsForAttendance = 20;  // 출석 1일 당 20포인트
+        const updatePointsQuery = 'UPDATE users SET points = points + ? WHERE id = ?';
+        db.query(updatePointsQuery, [pointsForAttendance, userId], (err, results) => {
+          if (err) return res.status(500).send('Error updating points for attendance');
+          
+          // 레벨 계산
+          const selectUserQuery = 'SELECT points FROM users WHERE id = ?';
+          db.query(selectUserQuery, [userId], (err, results) => {
+            if (err) return res.status(500).send('Error fetching user points');
+            
+            const points = results[0].points;
+            const newLevel = calculateLevel(points);
+            
+            const updateLevelQuery = 'UPDATE users SET level = ? WHERE id = ?';
+            db.query(updateLevelQuery, [newLevel, userId], (err, results) => {
+              if (err) return res.status(500).send('Error updating level');
+              res.status(200).send('Attendance marked, points awarded, and level updated');
+            });
+          });
+        });
+      });
+    } else {
+      res.status(400).send('You have already marked attendance for today');
+    }
+  });
+});
+
+// 댓글 작성 API (포인트 지급 및 레벨 업데이트)
+app.post('/comment', (req, res) => {
+  const { userId, reviewId, content } = req.body;
+  
+  const insertCommentQuery = 'INSERT INTO comments (userId, reviewId, content) VALUES (?, ?, ?)';
+  db.query(insertCommentQuery, [userId, reviewId, content], (err, results) => {
+    if (err) return res.status(500).send('Error posting comment');
+    
+    // 댓글 작성 후 포인트 지급
+    const pointsForComment = 20;  // 댓글 당 포인트
+    const updatePointsQuery = 'UPDATE users SET points = points + ? WHERE id = ?';
+    db.query(updatePointsQuery, [pointsForComment, userId], (err, results) => {
+      if (err) return res.status(500).send('Error updating points for comment');
+      
+      // 레벨 계산
+      const selectUserQuery = 'SELECT points FROM users WHERE id = ?';
+      db.query(selectUserQuery, [userId], (err, results) => {
+        if (err) return res.status(500).send('Error fetching user points');
+        
+        const points = results[0].points;
+        const newLevel = calculateLevel(points);
+        
+        const updateLevelQuery = 'UPDATE users SET level = ? WHERE id = ?';
+        db.query(updateLevelQuery, [newLevel, userId], (err, results) => {
+          if (err) return res.status(500).send('Error updating level');
+          res.status(200).send('Comment posted, points awarded, and level updated');
+        });
+      });
+    });
+  });
+});
+
 
 app.get("/check-login", (req, res) => {
   // 클라이언트에서 로그인한 유저 정보를 로컬 스토리지에 저장한다고 가정
@@ -399,6 +566,33 @@ app.post("/api/reset-password", async (req, res) => {
       success: false,
       message: "서버 오류가 발생했습니다." 
     });
+  }
+});
+
+// 프로필 수정 API
+app.put('/api/user', async (req, res) => {
+  const token = req.headers.authorization;
+  const { nickname, age, gender } = req.body;
+
+  if (!token) {
+    return res.status(401).json({ error: '인증이 필요합니다.' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, 'your-secret-key');
+    const email = decoded.email;
+
+    const updateQuery = `
+      UPDATE users 
+      SET nickname = ?, age = ?, gender = ?
+      WHERE email = ?
+    `;
+
+    await db.promise().execute(updateQuery, [nickname, age, gender, email]);
+    res.json({ message: '프로필이 성공적으로 업데이트되었습니다.' });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ error: '서버 오류가 발생했습니다.' });
   }
 });
 

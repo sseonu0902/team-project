@@ -8,13 +8,80 @@ body {
 }
 
 header {
-  background-color: #5d9cec;
+  background-color: #3498db;
   color: #fff;
   padding: 15px 20px;
+  text-align: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+  margin: 0 20px 0 0;
+  position: relative;
+  left: 0;
+  z-index: 40;
+}
+
+nav {
+  display: flex;
+  justify-content: center;
+  background-color: #3498db;
+  padding: 10px 0;
+  gap: 20px;
+  position: fixed;
+  top: 105px;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+nav a {
+  display: inline-block;
+  padding: 10px 15px;
+  text-decoration: none;
+  color: white;
+}
+
+nav a:hover {
+  background-color: #2980b9;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 150px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  top: 100%;
+  right: 0%;
+}
+
+.dropdown-content a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #ddd;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
 }
 
 .overlay {
@@ -45,7 +112,7 @@ form {
   flex-direction: column;
   margin-top: 60px;
   width: auto;
-  align-items: center; /* 추가: align-items 설정 */
+  align-items: center;
 }
 
 #login-form label {
@@ -58,9 +125,9 @@ form {
   margin-top: 0px;
   border: 1px solid #ddd;
   border-radius: 4px;
-  width: 500px; /* 고정된 길이 설정 */
+  width: 500px;
   box-sizing: border-box;
-  flex-grow: 0; /* 추가: flex-grow 속성 제거 */
+  flex-grow: 0;
 }
 
 button {
@@ -70,12 +137,12 @@ button {
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  width: 700px; /* 고정된 길이 설정 */
+  width: 700px;
   box-sizing: border-box;
   margin-left: 0px;
   margin-bottom: 10px;
   align-self: center;
-  flex-grow: 0; /* 추가: flex-grow 속성 제거 */
+  flex-grow: 0;
 }
 
 button:hover {
@@ -84,53 +151,142 @@ button:hover {
 
 .register-container {
   margin-top: 10px;
-  text-align: center; /* 회원가입 링크 가운데 정렬 */
+  text-align: center;
+}
+
+.error {
+  color: red;
+  margin-bottom: 10px;
+}
+
+.register-link {
+  text-align: center;
+}
+
+.register-link a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.register-link a:hover {
+  text-decoration: underline;
 }
 
 .login-container {
-  max-width: 400px;
-  margin: 50px auto;
-  padding: 20px;
-  border: 1px solid #ddd;
+  width: 100%;
+  max-width: none;
+  margin: 3rem auto;
+  padding: 3rem;
+  background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-container form {
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.login-container h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 3rem;
+  font-size: 2rem;
+  width: 100%;
 }
 
 .form-group {
-  margin-bottom: 20px;
+  width: 100%;
+  max-width: 800px;
+  margin-bottom: 1.5rem;
 }
 
 .form-group label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+  margin-bottom: 0.8rem;
+  color: #555;
+  font-size: 1rem;
 }
 
 .form-group input {
   width: 100%;
-  padding: 8px;
+  padding: 0.8rem;
   border: 1px solid #ddd;
   border-radius: 4px;
+  font-size: 1rem;
+}
+
+.login-button {
+  width: 100%;
+  max-width: 800px;
+  padding: 0.8rem;
+  background-color: #5d9cec;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.login-button:hover {
+  background-color: #357abd;
+}
+
+.error-message {
+  color: #d32f2f;
+  background-color: #fde7e7;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
 }
 
 .password-input-container {
   position: relative;
-  display: flex;
-  align-items: center;
+  width: 100%;
 }
 
 .password-input-container input {
-  flex: 1;
-  padding-right: 40px;
+  width: 100%;
+  padding: 10px;
+  padding-right: 70px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
 }
 
 .toggle-password {
   position: absolute;
   right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
   background: none;
   border: none;
   color: #666;
   cursor: pointer;
+  padding: 5px;
+  font-size: 14px;
+}
+
+.toggle-password:hover {
+  color: #333;
+}
+
+/* 기존 입력 필드 스타일 유지 */
+input[type="email"],
+input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 16px;
 }
 
 .button-group {
@@ -151,22 +307,4 @@ button:hover {
 
 .button-group button:hover {
   background-color: #0056b3;
-}
-
-.error {
-  color: red;
-  margin-bottom: 10px;
-}
-
-.register-link {
-  text-align: center;
-}
-
-.register-link a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.register-link a:hover {
-  text-decoration: underline;
 }
