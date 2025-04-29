@@ -17,21 +17,20 @@ function FreeBoard() {
       day: "2-digit",
     });
   };
-  
 
   // 임시 게시글 데이터 (추후 API로 교체 가능)
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const response = await axios.get("http://localhost:4000/api/review", {
-          params: { category: "자유게시판" } // 영화 리뷰 게시판 카테고리 추가
+          params: { category: "자유게시판" }, // 영화 리뷰 게시판 카테고리 추가
         });
         setPosts(response.data);
       } catch (error) {
         console.error("게시물 가져오기 실패:", error);
       }
     };
-  
+
     fetchPosts();
   }, []);
 
@@ -53,25 +52,40 @@ function FreeBoard() {
             <button className="login-btn" onClick={() => navigate("/login")}>
               로그인
             </button>
-            <button className="register-btn" onClick={() => navigate("/register")}>
+            <button
+              className="register-btn"
+              onClick={() => navigate("/register")}
+            >
               회원가입
             </button>
           </>
         )}
-        {user && <p className="user-nickname">{user.nickname}님</p>}
-        {user && <button className="logout-btn" onClick={logout}>로그아웃</button>}
+        {user && (
+          <p
+            className="user-nickname"
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/profile")}
+          >
+            {user.nickname}님
+          </p>
+        )}
+        {user && (
+          <button className="logout-btn" onClick={logout}>
+            로그아웃
+          </button>
+        )}
       </header>
-      
+
       <nav>
-      <a 
-        href="#" 
-        onClick={(e) => {
-          e.preventDefault();
-          navigate(user ? "/LoginMain" : "/Main");
-        }}
-      >
-        홈
-      </a>
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(user ? "/LoginMain" : "/Main");
+          }}
+        >
+          홈
+        </a>
         <div className="dropdown">
           <a href="MR">리뷰게시판</a>
           <div className="dropdown-content">
@@ -121,9 +135,9 @@ function FreeBoard() {
         {/* 사이드바 */}
         <aside className="sidebar">
           <ul>
-            <li className="disabled">영화 커뮤니티</li>
-            <li>OTT 영화 커뮤니티</li>
-            <li>자유게시판</li>
+            <li onClick={() => navigate("/MR")}>영화 커뮤니티</li>
+            <li onClick={() => navigate("/OTTMR")}>OTT 영화 커뮤니티</li>
+            <li onClick={() => navigate("/FreeBoard")}>자유게시판</li>
           </ul>
         </aside>
 
@@ -134,7 +148,7 @@ function FreeBoard() {
 
             <button
               className="write-button"
-              onClick={() => navigate('/CreatePost')}
+              onClick={() => navigate("/CreatePost")}
             >
               글쓰기
             </button>

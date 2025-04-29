@@ -32,7 +32,7 @@ function LoginMain() {
   const handleLogout = () => {
     // 로그아웃 처리: localStorage에서 isLoggedIn 삭제
     localStorage.removeItem("user");
-    
+
     // 상태를 false로 설정
     setIsLoggedIn(false);
 
@@ -75,12 +75,12 @@ function LoginMain() {
         </div>
         {isLoggedIn && nickname && (
           <p
-          className="user-nickname"
-          style={{ cursor: "pointer", textDecoration: "underline" }}
-          onClick={() => navigate("/profile")}
-        >
-          {nickname}님
-        </p>
+            className="user-nickname"
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/profile")}
+          >
+            {nickname}님
+          </p>
         )}
         <button className="logout-btn" onClick={handleLogout}>
           로그아웃
@@ -88,15 +88,15 @@ function LoginMain() {
       </header>
 
       <nav>
-      <a 
-        href="#" 
-        onClick={(e) => {
-          e.preventDefault(); 
-          navigate(isLoggedIn ? "/LoginMain" : "/Main"); 
-        }}
-      >
-        홈
-      </a>
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(isLoggedIn ? "/LoginMain" : "/Main");
+          }}
+        >
+          홈
+        </a>
         <div className="dropdown">
           <a href="MR">리뷰게시판</a>
           <div className="dropdown-content">
