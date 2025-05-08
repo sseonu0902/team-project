@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { UserContext } from "./UserContext";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -22,6 +23,8 @@ function PostDetail() {
   const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [liked, setLiked] = useState(false);
+  const [likeCount, setLikeCount] = useState(0);
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -39,6 +42,46 @@ function PostDetail() {
     };
     fetchPost();
   }, [id]);
+
+  useEffect(() => {
+    if (!user) return; // user가 없으면 아예 실행 안 함
+  
+    const fetchLikes = async () => {
+      try {
+        const res = await axios.get(`http://localhost:4000/api/review/${id}/likes`);
+        setLikeCount(res.data.likeCount);
+  
+        const likedRes = await axios.get(`http://localhost:4000/api/review/${id}/liked`, {
+          params: { userId: user.user_id },
+        });
+        setLiked(likedRes.data.liked);
+      } catch (err) {
+        console.error("좋아요 상태 조회 실패:", err);
+      }
+    };
+  
+    fetchLikes();
+  }, [id, user]); // user가 null → 값 있을 때 실행됨
+  
+  useEffect(() => {
+    console.log("🧠 user:", user);
+  }, [user]);
+
+  const handleLikeToggle = async () => {
+    if (!user) {
+      alert("로그인 후 이용해 주세요.");
+      return;
+    }
+    try {
+      const res = await axios.post(`http://localhost:4000/api/review/${id}/like`, {
+        userId: user.user_id,
+      });
+      setLiked(res.data.liked);
+      setLikeCount((prev) => prev + (res.data.liked ? 1 : -1));
+    } catch (err) {
+      console.error("좋아요 처리 실패:", err);
+    }
+  };
 
   const handleCommentSubmit = async (e) => {
     e.preventDefault();
@@ -128,49 +171,49 @@ function PostDetail() {
       </header>
 
       <nav>
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate(user ? "/LoginMain" : "/Main");
-          }}
-        >
-          홈
-        </a>
+            <Link to={user ? "/LoginMain" : "/Main"}>홈</Link>
         <div className="dropdown">
-          <a href="/mr">리뷰게시판</a>
+          <Link to="/MR">리뷰게시판</Link>
           <div className="dropdown-content">
-            <a href="MR">영화 리뷰 게시판</a>
-            <a href="OTTMR">OTT 게시판</a>
-            <a href="FreeBoard">자유 게시판</a>
+            <Link to="/MR">영화 리뷰 게시판</Link>
+            <Link to="/OTTMR">OTT 게시판</Link>
+            <Link to="/FreeBoard">자유 게시판</Link>
           </div>
         </div>
         <div className="dropdown">
-          <a href="/genre">핫 이슈</a>
+          <Link to="/genre">핫 이슈</Link>
           <div className="dropdown-content">
-            <a href="#">TOP10 영화</a>
-            <a href="#">영화 뉴스</a>
+            <Link to="#">TOP10 영화</Link>
+            <Link to="#">영화 뉴스</Link>
           </div>
         </div>
         <div className="dropdown">
-          <a href="/community">상영 예정작</a>
+          <Link to="/community">상영 예정작</Link>
           <div className="dropdown-content">
-            <a href="#">영화관 상영 예정작</a>
-            <a href="#">OTT 상영 예정작</a>
+            <Link to="#">영화관 상영 예정작</Link>
+            <Link to="#">OTT 상영 예정작</Link>
           </div>
         </div>
         <div className="dropdown">
-          <a href="/profile">OTT관</a>
+          <Link to="/profile">OTT관</Link>
           <div className="dropdown-content">
-            <a href="#">넷플릭스</a>
-            <a href="#">티빙</a>
-            <a href="#">왓챠</a>
-            <a href="#">쿠팡플레이</a>
-            <a href="#">웨이브</a>
-            <a href="#">라프텔</a>
+            <Link to="#">넷플릭스</Link>
+            <Link to="#">티빙</Link>
+            <Link to="#">왓챠</Link>
+            <Link to="#">쿠팡플레이</Link>
+            <Link to="#">웨이브</Link>
+            <Link to="#">라프텔</Link>
           </div>
         </div>
-        <a href="/contact">고객센터</a>
+        <div className="dropdown">
+          <Link to="/contact">영화관</Link>
+          <div className="dropdown-content">
+            <Link to="#">CGV</Link>
+            <Link to="#">롯데시네마</Link>
+            <Link to="#">메가박스</Link>
+          </div>
+        </div>
+        <Link to="*">고객센터</Link>
       </nav>
 
       <div className="main-layout">
@@ -293,7 +336,31 @@ function PostDetail() {
 
               <hr style={{ margin: "30px 0" }} />
               <section>
-                <h3>댓글</h3>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <h3>댓글</h3>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <button
+                      onClick={handleLikeToggle}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: "20px",
+                        color: liked ? "#e25555" : "#ccc",
+                        lineHeight: "1",
+                        padding: "0",
+                        margin: "0",
+                        display: "inline", // 핵심!
+                        width: "auto",      // 불필요한 여백 제거
+                        height: "auto",
+                      }}
+                      aria-label="좋아요"
+                    >
+                      {liked ? "❤️" : "🤍"}
+                    </button>
+                    <span style={{ marginLeft: "8px", fontSize: "16px", color: "#555" }}>{likeCount}</span>
+                  </div>
+                </div>
                 {comments.length === 0 ? (
                   <p>아직 댓글이 없습니다.</p>
                 ) : (

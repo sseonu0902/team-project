@@ -20,7 +20,7 @@ app.use(cors(corsOptions));
 const db = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "DDelicious1010!@",
+  password: "1234",
   database: "mydatabase",
 });
 
@@ -205,11 +205,9 @@ app.post("/api/review", async (req, res) => {
   }
 });
 
-
-
-//카테고리
+//카테고리 및 게시물 정렬
 app.get("/api/review", async (req, res) => {
-  const { category } = req.query; // URL 파라미터에서 category 값 가져오기
+  const { category, sort } = req.query;
 
   try {
     let query = `
@@ -217,23 +215,31 @@ app.get("/api/review", async (req, res) => {
       FROM review r
       JOIN users u ON r.user_id = u.user_id
     `;
-
     const params = [];
 
-    // 카테고리가 전달된 경우 쿼리에 조건 추가
     if (category) {
       query += " WHERE r.category = ?";
       params.push(category);
     }
 
-    query += " ORDER BY r.created_date DESC";
-
+    // 정렬 기준 처리
+    switch (sort) {
+      case "views":
+        query += " ORDER BY r.views DESC, r.created_date DESC";
+        break;
+      case "rating":
+        query += " ORDER BY r.rating DESC, r.created_date DESC";
+        break;
+      case "date":
+      default:
+        query += " ORDER BY r.created_date DESC";
+    }    
     const [reviews] = await db.promise().query(query, params);
-
     res.status(200).json(reviews);
   } catch (err) {
     console.error("리뷰 목록 가져오기 오류:", err);
     res.status(500).json({ message: "서버 오류 발생" });
+    
   }
 });
 
@@ -340,7 +346,80 @@ app.get("/api/review/:id/comments", async (req, res) => {
   }
 });
 
+// 좋아요 토글 (추가 또는 삭제)
+app.post("/api/review/:id/like", async (req, res) => {
+  const reviewId = req.params.id;
+  const { userId } = req.body;
 
+  if (!userId) {
+    return res.status(400).json({ message: "userId가 필요합니다." });
+  }
+
+  try {
+    // 이미 좋아요 했는지 확인
+    const [rows] = await db.promise().query(
+      "SELECT * FROM likes WHERE review_id = ? AND user_id = ?",
+      [reviewId, userId]
+    );
+
+    if (rows.length > 0) {
+      // 이미 좋아요 했다면 → 삭제
+      await db.promise().query(
+        "DELETE FROM likes WHERE review_id = ? AND user_id = ?",
+        [reviewId, userId]
+      );
+      res.status(200).json({ liked: false });
+    } else {
+      // 아직 안 했으면 → 추가
+      await db.promise().query(
+        "INSERT INTO likes (review_id, user_id, like_date) VALUES (?, ?, CURDATE())",
+        [reviewId, userId]
+      );
+      res.status(200).json({ liked: true });
+    }
+  } catch (err) {
+    console.error("좋아요 토글 실패:", err);
+    res.status(500).json({ message: "좋아요 처리 중 오류 발생" });
+  }
+});
+
+// 좋아요 수 조회
+app.get("/api/review/:id/likes", async (req, res) => {
+  const reviewId = req.params.id;
+
+  try {
+    const [rows] = await db.promise().query(
+      "SELECT COUNT(*) AS likeCount FROM likes WHERE review_id = ?",
+      [reviewId]
+    );
+    res.status(200).json({ likeCount: rows[0].likeCount });
+  } catch (err) {
+    console.error("좋아요 수 조회 실패:", err);
+    res.status(500).json({ message: "좋아요 수 조회 실패" });
+  }
+});
+
+// 좋아요 여부 확인 API
+app.get("/api/review/:id/liked", async (req, res) => {
+  const reviewId = req.params.id;
+  const userId = req.query.userId;
+
+  if (!userId) {
+    return res.status(400).json({ message: "userId가 필요합니다." });
+  }
+
+  try {
+    const [rows] = await db.promise().query(
+      "SELECT * FROM likes WHERE review_id = ? AND user_id = ?",
+      [reviewId, userId]
+    );
+
+    res.status(200).json({ liked: rows.length > 0 });
+  } catch (err) {
+    console.error("좋아요 여부 조회 실패:", err);
+    res.status(500).json({ message: "좋아요 여부 조회 실패" });
+  }
+});
 
 // 서버 실행
 const PORT = process.env.PORT || 4000;
