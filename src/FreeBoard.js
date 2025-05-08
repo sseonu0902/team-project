@@ -8,7 +8,7 @@ function FreeBoard() {
   const navigate = useNavigate();
   const { user, logout } = useContext(UserContext);
   const [posts, setPosts] = useState([]);
-
+  const [sort, setSort] = useState("date");
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("ko-KR", {
@@ -20,19 +20,25 @@ function FreeBoard() {
 
   // 임시 게시글 데이터 (추후 API로 교체 가능)
   useEffect(() => {
+    console.log("정렬 기준:", sort);
+  
     const fetchPosts = async () => {
       try {
         const response = await axios.get("http://localhost:4000/api/review", {
-          params: { category: "자유게시판" }, // 영화 리뷰 게시판 카테고리 추가
+          params: {
+            category: "현재 상영 영화 게시판",
+            sort: sort,
+          },
         });
+        console.log("받은 데이터:", response.data);
         setPosts(response.data);
       } catch (error) {
         console.error("게시물 가져오기 실패:", error);
       }
     };
-
+  
     fetchPosts();
-  }, []);
+  }, [sort]);
 
   return (
     <div>
@@ -153,7 +159,11 @@ function FreeBoard() {
               글쓰기
             </button>
 
-            <select className="sort-dropdown">
+            <select
+              className="sort-dropdown"
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+            >
               <option value="views">조회수 높은 순</option>
               <option value="rating">평점 높은 순</option>
               <option value="date">최신 순</option>
