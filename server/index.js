@@ -109,20 +109,6 @@ app.post("/login", async (req, res) => {
     });
   });
 });
-// 프로필 수정 라우트
-app.put('/editprofile/:email', (req, res) => {
-  const { email } = req.params;
-  const { nickname, age, gender } = req.body;
-
-  const sql = `UPDATE users SET nickname = ?, age = ?, gender = ? WHERE email = ?`;
-  db.query(sql, [nickname, age, gender, email], (err, result) => {
-    if (err) {
-      console.error("프로필 수정 실패:", err);
-      return res.status(500).json({ message: "프로필 수정 실패" });
-    }
-    return res.status(200).json({ message: "프로필 수정 완료" });
-  });
-});
 
 // 유저 포인트 + 등급 정보 가져오기
 app.get("/api/user-info", async (req, res) => {
@@ -153,7 +139,6 @@ app.get("/check-login", (req, res) => {
   // 클라이언트에서 로그인한 유저 정보를 로컬 스토리지에 저장한다고 가정
   res.json({ message: "로그인 상태 확인은 클라이언트에서 관리합니다." });
 });
-
 
 // 리뷰 등록 API
 app.post("/api/review", async (req, res) => {
@@ -211,13 +196,6 @@ app.post("/api/review", async (req, res) => {
         [reviewId, rating_type_id, score]
       );
     }
-
-    // 리뷰 등록 후 포인트 지급 로직 추가
-    const pointsToAdd = 50; // 예시로 리뷰 작성시 50포인트 지급
-    await db.promise().query(
-      "UPDATE users SET points = points + ? WHERE user_id = ?",
-      [pointsToAdd, user_id]
-    );
 
     res.status(201).json({ message: "리뷰 저장 완료" });
 
@@ -321,7 +299,7 @@ app.post("/api/review/:id/views", async (req, res) => {
   }
 });
 
-// 댓글
+//댓글
 app.post("/api/review/:id/comments", async (req, res) => {
   const reviewId = req.params.id;
   const { userId, content } = req.body;
@@ -338,13 +316,6 @@ app.post("/api/review/:id/comments", async (req, res) => {
       [userId, reviewId, content, now]
     );
 
-    // 댓글 작성 후 포인트 지급 로직 추가
-    const pointsToAdd = 20; // 예시로 댓글 작성시 20포인트 지급
-    await db.promise().query(
-      "UPDATE users SET points = points + ? WHERE user_id = ?",
-      [pointsToAdd, userId]
-    );
-
     res.status(201).json({ message: "댓글 작성 완료" });
   } catch (err) {
     console.error("댓글 작성 실패:", err);
@@ -355,6 +326,7 @@ app.post("/api/review/:id/comments", async (req, res) => {
 //댓글 목록 불러오기
 app.get("/api/review/:id/comments", async (req, res) => {
   const reviewId = req.params.id;
+
   try {
     const [rows] = await db.promise().execute(
       `SELECT c.comment_id, c.content, c.created_date, u.nickname
@@ -364,6 +336,7 @@ app.get("/api/review/:id/comments", async (req, res) => {
        ORDER BY c.created_date DESC`,
       [reviewId]    
     );
+
     res.json(rows);
   } catch (err) {
     console.error("댓글 조회 실패:", err);
@@ -411,6 +384,7 @@ app.post("/api/review/:id/like", async (req, res) => {
 // 좋아요 수 조회
 app.get("/api/review/:id/likes", async (req, res) => {
   const reviewId = req.params.id;
+
   try {
     const [rows] = await db.promise().query(
       "SELECT COUNT(*) AS likeCount FROM likes WHERE review_id = ?",

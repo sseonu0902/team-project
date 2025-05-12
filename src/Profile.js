@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef,useContext } from "react";
 import { UserContext } from "./UserContext";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
+import axios from "axios";
 
 function Profile() {
   const navigate = useNavigate();
