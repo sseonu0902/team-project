@@ -153,6 +153,13 @@ app.post("/api/review", async (req, res) => {
       );
     }
 
+    // 리뷰 등록 후 포인트 지급 로직 추가
+    const pointsToAdd = 50; // 예시로 리뷰 작성시 50포인트 지급
+    await db.promise().query(
+      "UPDATE users SET points = points + ? WHERE user_id = ?",
+      [pointsToAdd, user_id]
+    );
+
     res.status(201).json({ message: "리뷰 저장 완료" });
 
   } catch (err) {
@@ -160,6 +167,7 @@ app.post("/api/review", async (req, res) => {
     res.status(500).json({ message: "서버 오류 발생" });
   }
 });
+
 
 
 //카테고리
@@ -248,7 +256,7 @@ app.post("/api/review/:id/views", async (req, res) => {
   }
 });
 
-//댓글
+// 댓글
 app.post("/api/review/:id/comments", async (req, res) => {
   const reviewId = req.params.id;
   const { userId, content } = req.body;
@@ -265,12 +273,20 @@ app.post("/api/review/:id/comments", async (req, res) => {
       [userId, reviewId, content, now]
     );
 
+    // 댓글 작성 후 포인트 지급 로직 추가
+    const pointsToAdd = 20; // 예시로 댓글 작성시 20포인트 지급
+    await db.promise().query(
+      "UPDATE users SET points = points + ? WHERE user_id = ?",
+      [pointsToAdd, userId]
+    );
+
     res.status(201).json({ message: "댓글 작성 완료" });
   } catch (err) {
     console.error("댓글 작성 실패:", err);
     res.status(500).json({ error: "댓글 작성 실패" });
   }
 });
+
 
 
 
