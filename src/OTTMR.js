@@ -8,7 +8,7 @@ function OTTMR() {
   const navigate = useNavigate();
   const { user, logout } = useContext(UserContext);
   const [posts, setPosts] = useState([]);
-
+  const [sort, setSort] = useState("date");
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("ko-KR", {
@@ -17,15 +17,20 @@ function OTTMR() {
       day: "2-digit",
     });
   };
-  
 
   // 임시 게시글 데이터 (추후 API로 교체 가능)
   useEffect(() => {
+    console.log("정렬 기준:", sort);
+  
     const fetchPosts = async () => {
       try {
         const response = await axios.get("http://localhost:4000/api/review", {
-          params: { category: "OTT 영화 게시판" } // 영화 리뷰 게시판 카테고리 추가
+          params: {
+            category: "현재 상영 영화 게시판",
+            sort: sort,
+          },
         });
+        console.log("받은 데이터:", response.data);
         setPosts(response.data);
       } catch (error) {
         console.error("게시물 가져오기 실패:", error);
@@ -33,7 +38,7 @@ function OTTMR() {
     };
   
     fetchPosts();
-  }, []);
+  }, [sort]);
 
   return (
     <div>
@@ -53,25 +58,40 @@ function OTTMR() {
             <button className="login-btn" onClick={() => navigate("/login")}>
               로그인
             </button>
-            <button className="register-btn" onClick={() => navigate("/register")}>
+            <button
+              className="register-btn"
+              onClick={() => navigate("/register")}
+            >
               회원가입
             </button>
           </>
         )}
-        {user && <p className="user-nickname">{user.nickname}님</p>}
-        {user && <button className="logout-btn" onClick={logout}>로그아웃</button>}
+        {user && (
+          <p
+            className="user-nickname"
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/profile")}
+          >
+            {user.nickname}님
+          </p>
+        )}
+        {user && (
+          <button className="logout-btn" onClick={logout}>
+            로그아웃
+          </button>
+        )}
       </header>
-      
+
       <nav>
-      <a 
-        href="#" 
-        onClick={(e) => {
-          e.preventDefault();
-          navigate(user ? "/LoginMain" : "/Main");
-        }}
-      >
-        홈
-      </a>
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(user ? "/LoginMain" : "/Main");
+          }}
+        >
+          홈
+        </a>
         <div className="dropdown">
           <a href="MR">리뷰게시판</a>
           <div className="dropdown-content">
@@ -121,9 +141,11 @@ function OTTMR() {
         {/* 사이드바 */}
         <aside className="sidebar">
           <ul>
-            <li className="disabled">영화 커뮤니티</li>
-            <li>OTT 영화 커뮤니티</li>
-            <li>자유게시판</li>
+            <ul>
+              <li onClick={() => navigate("/MR")}>영화 커뮤니티</li>
+              <li onClick={() => navigate("/OTTMR")}>OTT 영화 커뮤니티</li>
+              <li onClick={() => navigate("/FreeBoard")}>자유게시판</li>
+            </ul>
           </ul>
         </aside>
 
@@ -134,12 +156,16 @@ function OTTMR() {
 
             <button
               className="write-button"
-              onClick={() => navigate('/CreatePost')}
+              onClick={() => navigate("/CreatePost")}
             >
               글쓰기
             </button>
 
-            <select className="sort-dropdown">
+            <select
+              className="sort-dropdown"
+              value={sort}
+              onChange={(e) => setSort(e.target.value)}
+            >
               <option value="views">조회수 높은 순</option>
               <option value="rating">평점 높은 순</option>
               <option value="date">최신 순</option>
