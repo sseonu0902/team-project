@@ -9,6 +9,7 @@ function FreeBoard() {
   const { user, logout } = useContext(UserContext);
   const [posts, setPosts] = useState([]);
   const [sort, setSort] = useState("date");
+  const [category, setCategory] = useState("자유게시판");
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("ko-KR", {
@@ -20,25 +21,23 @@ function FreeBoard() {
 
   // 임시 게시글 데이터 (추후 API로 교체 가능)
   useEffect(() => {
-    console.log("정렬 기준:", sort);
-  
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get("http://localhost:4000/api/review", {
-          params: {
-            category: "현재 상영 영화 게시판",
-            sort: sort,
-          },
-        });
-        console.log("받은 데이터:", response.data);
-        setPosts(response.data);
-      } catch (error) {
-        console.error("게시물 가져오기 실패:", error);
-      }
-    };
-  
-    fetchPosts();
-  }, [sort]);
+  const fetchPosts = async () => {
+    try {
+      const response = await axios.get("http://localhost:4000/api/review", {
+        params: {
+          category: category,
+          sort: sort,
+        },
+      });
+      setPosts(response.data);
+    } catch (error) {
+      console.error("게시물 가져오기 실패:", error);
+    }
+  };
+
+  fetchPosts();
+}, [category, sort]);
+
 
   return (
     <div>
@@ -141,9 +140,9 @@ function FreeBoard() {
         {/* 사이드바 */}
         <aside className="sidebar">
           <ul>
-            <li onClick={() => navigate("/MR")}>영화 커뮤니티</li>
-            <li onClick={() => navigate("/OTTMR")}>OTT 영화 커뮤니티</li>
-            <li onClick={() => navigate("/FreeBoard")}>자유게시판</li>
+            <li onClick={() => setCategory("현재 상영 영화 게시판")}>영화 커뮤니티</li>
+            <li onClick={() => setCategory("OTT 영화 게시판")}>OTT 영화 커뮤니티</li>
+            <li onClick={() => setCategory("자유게시판")}>자유게시판</li>
           </ul>
         </aside>
 

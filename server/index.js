@@ -161,7 +161,7 @@ app.post("/api/review", async (req, res) => {
     let current_grade_code = userRows[0].grade_code ?? 1;
 
     // ⭐ 포인트 무조건 +10
-    const updatedPoints = points + 90;
+    const updatedPoints = points + 10;
 
     // ⭐ 새로운 레벨 계산
     let new_grade_code;
@@ -212,13 +212,7 @@ app.post("/api/review", async (req, res) => {
   }
 });
 
-<<<<<<< HEAD
-
-
-//카테고리
-=======
 //카테고리 및 게시물 정렬
->>>>>>> 8f287ae8e7db39d55cc56ad1e2ff9273288681ce
 app.get("/api/review", async (req, res) => {
   const { category, sort } = req.query;
 
@@ -343,13 +337,9 @@ app.post("/api/review/:id/comments", async (req, res) => {
   }
 });
 
-
-
-
 //댓글 목록 불러오기
 app.get("/api/review/:id/comments", async (req, res) => {
   const reviewId = req.params.id;
-
   try {
     const [rows] = await db.promise().execute(
       `SELECT c.comment_id, c.content, c.created_date, u.nickname
@@ -359,7 +349,6 @@ app.get("/api/review/:id/comments", async (req, res) => {
        ORDER BY c.created_date DESC`,
       [reviewId]    
     );
-
     res.json(rows);
   } catch (err) {
     console.error("댓글 조회 실패:", err);
@@ -407,7 +396,6 @@ app.post("/api/review/:id/like", async (req, res) => {
 // 좋아요 수 조회
 app.get("/api/review/:id/likes", async (req, res) => {
   const reviewId = req.params.id;
-
   try {
     const [rows] = await db.promise().query(
       "SELECT COUNT(*) AS likeCount FROM likes WHERE review_id = ?",
