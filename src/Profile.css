@@ -199,6 +199,7 @@ nav a:hover {
   max-width: 600px;
   margin: 0 auto;
 }
+
 .progress-bar {
   width: 100%;
   background-color: #ddd;
@@ -214,5 +215,3 @@ nav a:hover {
   width: 0%;
   transition: width 0.5s ease-in-out;
 }
-
-

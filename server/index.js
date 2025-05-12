@@ -109,6 +109,20 @@ app.post("/login", async (req, res) => {
     });
   });
 });
+// 프로필 수정 라우트
+app.put('/editprofile/:email', (req, res) => {
+  const { email } = req.params;
+  const { nickname, age, gender } = req.body;
+
+  const sql = `UPDATE users SET nickname = ?, age = ?, gender = ? WHERE email = ?`;
+  db.query(sql, [nickname, age, gender, email], (err, result) => {
+    if (err) {
+      console.error("프로필 수정 실패:", err);
+      return res.status(500).json({ message: "프로필 수정 실패" });
+    }
+    return res.status(200).json({ message: "프로필 수정 완료" });
+  });
+});
 
 // 유저 포인트 + 등급 정보 가져오기
 app.get("/api/user-info", async (req, res) => {
@@ -139,6 +153,7 @@ app.get("/check-login", (req, res) => {
   // 클라이언트에서 로그인한 유저 정보를 로컬 스토리지에 저장한다고 가정
   res.json({ message: "로그인 상태 확인은 클라이언트에서 관리합니다." });
 });
+
 
 // 리뷰 등록 API
 app.post("/api/review", async (req, res) => {

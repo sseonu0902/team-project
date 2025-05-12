@@ -46,7 +46,6 @@ function Profile() {
         }
         if (userData.age) setAge(userData.age);
         if (userData.gender) setGender(userData.gender);
-
         // 로그인 시 백엔드에서 포인트와 마일리지 가져오기
         fetchUserProfile(userData.email);
       }
@@ -84,7 +83,6 @@ function Profile() {
       setProfileImage(URL.createObjectURL(file));
     }
   };
-  // 레벨 및 다음 레벨 포인트 계산
   const getLevelInfo = (point) => {
     const levels = [
       { level: 1, point: 100 },
