@@ -161,7 +161,7 @@ app.post("/api/review", async (req, res) => {
     let current_grade_code = userRows[0].grade_code ?? 1;
 
     // ⭐ 포인트 무조건 +10
-    const updatedPoints = points + 90;
+    const updatedPoints = points + 10;
 
     // ⭐ 새로운 레벨 계산
     let new_grade_code;
@@ -322,8 +322,6 @@ app.post("/api/review/:id/comments", async (req, res) => {
     res.status(500).json({ error: "댓글 작성 실패" });
   }
 });
-
-
 
 //댓글 목록 불러오기
 app.get("/api/review/:id/comments", async (req, res) => {

@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef,useContext } from "react";
+import { UserContext } from "./UserContext";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // ⭐ 추가
 import "./Profile.css";
+import axios from "axios";
 
 function Profile() {
   const navigate = useNavigate();
@@ -15,6 +16,7 @@ function Profile() {
   const [profileImage, setProfileImage] = useState(null);
   const [age, setAge] = useState(25);
   const [gender, setGender] = useState("남성");
+  const { user, logout } = useContext(UserContext);
 
   useEffect(() => {
     const loginStatus = localStorage.getItem("isLoggedIn") === "true";
@@ -42,9 +44,27 @@ function Profile() {
             console.error("유저 포인트 조회 실패:", err);
           });
         }
+        if (userData.age) setAge(userData.age);
+        if (userData.gender) setGender(userData.gender);
+        // 로그인 시 백엔드에서 포인트와 마일리지 가져오기
+        fetchUserProfile(userData.email);
       }
     }
   }, []);
+
+  // 백엔드에서 사용자 포인트와 마일리지 가져오기
+  const fetchUserProfile = async (email) => {
+    try {
+      const response = await axios.get(`http://localhost:4000/mypage/${email}`);
+      const userData = response.data;
+
+      // 서버에서 포인트와 마일리지 받아오기
+      setPoint(userData.point);
+      setMileage(userData.mileage); // <- 추가된 부분
+    } catch (error) {
+      console.error("Error fetching user profile:", error);
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -63,8 +83,6 @@ function Profile() {
       setProfileImage(URL.createObjectURL(file));
     }
   };
-
-  // 레벨 및 다음 레벨 포인트 계산
   const getLevelInfo = (point) => {
     const levels = [
       { level: 1, point: 100 },
@@ -141,7 +159,11 @@ function Profile() {
           <button className="search-button">검색</button>
         </div>
         {isLoggedIn && nickname && (
-          <p className="user-nickname" style={{ cursor: "pointer", textDecoration: "underline" }} onClick={() => navigate("/profile")}>
+          <p
+            className="user-nickname"
+            style={{ cursor: "pointer", textDecoration: "underline" }}
+            onClick={() => navigate("/profile")}
+          >
             {nickname}님
           </p>
         )}
@@ -149,7 +171,15 @@ function Profile() {
       </header>
 
       <nav>
-        <a href="/main">홈</a>
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(user ? "/LoginMain" : "/Main");
+          }}
+        >
+          홈
+        </a>
         <div className="dropdown">
           <a href="MR">리뷰게시판</a>
           <div className="dropdown-content">
@@ -225,7 +255,7 @@ function Profile() {
           <p><strong>성별:</strong> {gender}</p>
         </div>
         <div className="button-group">
-          <button className="profile-btn">프로필 수정</button>
+          <button onClick={() => navigate("/update-profile")}>프로필 수정</button>
           <button className="profile-btn">마일리지 내역</button>
         </div>
       </div>
