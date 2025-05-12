@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import "./EditProfile.css"; // EditProfile CSS 파일을 추가하세요.
+import "./EditProfile.css";
 import axios from "axios";
 
 function EditProfile() {
@@ -23,8 +23,6 @@ function EditProfile() {
       setEmail(userData.email);
       setAge(userData.age);
       setGender(userData.gender);
-
-      // 백엔드에서 포인트와 마일리지 가져오기
       fetchUserProfile(userData.email);
     }
   }, []);
@@ -51,9 +49,26 @@ function EditProfile() {
     }
   };
 
-  const handleSaveChanges = () => {
-    // 프로필 변경 사항 저장 로직
-    // 예: 백엔드에 변경된 프로필 데이터를 전송
+  const handleSaveChanges = async () => {
+    try {
+      const updatedUser = {
+        nickname,
+        age,
+        gender,
+        email,
+      };
+
+      await axios.put(`http://localhost:4000/editprofile/${email}`, updatedUser);
+
+      // localStorage 업데이트
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+
+      alert("프로필이 성공적으로 수정되었습니다.");
+      navigate("/profile");
+    } catch (error) {
+      console.error("프로필 저장 중 오류 발생:", error);
+      alert("프로필 저장에 실패했습니다.");
+    }
   };
 
   const handleCancel = () => {
@@ -62,7 +77,6 @@ function EditProfile() {
 
   return (
     <div>
-      {/* 상단 헤더 */}
       <header>
         <h1>MRS</h1>
         <div className="search-container">
@@ -79,7 +93,6 @@ function EditProfile() {
         <button className="logout-btn">로그아웃</button>
       </header>
 
-      {/* 네비게이션 바 */}
       <nav>
         <a href="/main">홈</a>
         <div className="dropdown">

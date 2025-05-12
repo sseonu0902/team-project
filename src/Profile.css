@@ -199,10 +199,7 @@ nav a:hover {
   max-width: 600px;
   margin: 0 auto;
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> 8f287ae8e7db39d55cc56ad1e2ff9273288681ce
 .progress-bar {
   width: 100%;
   background-color: #ddd;
@@ -217,8 +214,5 @@ nav a:hover {
   background-color: #4caf50; /* 초록색 */
   width: 0%;
   transition: width 0.5s ease-in-out;
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> 8f287ae8e7db39d55cc56ad1e2ff9273288681ce
+
