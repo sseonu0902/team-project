@@ -9,21 +9,21 @@ const categories = ["자유게시판", "현재 상영 영화 게시판", "OTT �
 const ratingAspects = ["스토리", "배우(캐릭터)", "음악(OST)", "몰입도", "연출"];
 
 const ratingTypeMap = {
-  "스토리": 1,
+  스토리: 1,
   "배우(캐릭터)": 2,
   "음악(OST)": 3,
-  "몰입도": 4,
-  "연출": 5,
+  몰입도: 4,
+  연출: 5,
 };
 
 const StarRating = ({ rating, setRating }) => (
   <div className="star-rating">
-    {[1, 2, 3, 4, 5].map((star) => (
+    {[1, 2, 3, 4, 5].map((n) => (
       <FaStar
-        key={star}
+        key={n}
         size={30}
-        onClick={() => setRating(star)}
-        color={star <= rating ? "#ffc107" : "#e4e5e9"}
+        onClick={() => setRating(n)}
+        color={n <= rating ? "#ffc107" : "#e4e5e9"}
         style={{ cursor: "pointer" }}
       />
     ))}
@@ -31,38 +31,29 @@ const StarRating = ({ rating, setRating }) => (
 );
 
 const CreatePost = () => {
-  const { user, logout } = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
 
   const [category, setCategory] = useState(categories[1]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);
-  const [ratings, setRatings] = useState([{ aspect: ratingAspects[0], score: 0 }]);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [ratings, setRatings] = useState([
+    { aspect: ratingAspects[0], score: 0 },
+  ]);
   const [nickname, setNickname] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const loginStatus = localStorage.getItem("isLoggedIn") === "true";
-    setIsLoggedIn(loginStatus);
-
-    if (loginStatus) {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        const userData = JSON.parse(storedUser);
-        if (userData.nickname) {
-          setNickname(userData.nickname);
-        }
-      }
+    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(loggedIn);
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      const parsed = JSON.parse(storedUser);
+      if (parsed.nickname) setNickname(parsed.nickname);
     }
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem("user");
-    localStorage.setItem("isLoggedIn", "false");
-    setIsLoggedIn(false);
-    navigate("/Main");
-  };
+    if (!loggedIn) navigate("/login");
+  }, [navigate]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -98,14 +89,9 @@ const CreatePost = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
-    const avgRating = ratings.reduce((sum, item) => sum + item.score, 0) / ratings.length;
-  
-    const convertedRatings = ratings.map((item) => ({
-      rating_type_id: ratingTypeMap[item.aspect], // 여기서 변환
-      score: item.score,
-    }));
-  
+    const avgRating =
+      ratings.reduce((sum, r) => sum + r.score, 0) / ratings.length;
+
     const newPost = {
       movie_id: null,
       nickname: user.nickname,
@@ -114,58 +100,54 @@ const CreatePost = () => {
       content,
       image,
       rating: parseFloat(avgRating.toFixed(1)),
-      ratings: convertedRatings, // 변환된 배열 사용
+      ratings: ratings.map((r) => ({
+        rating_type_id: ratingTypeMap[r.aspect],
+        score: r.score,
+      })),
     };
-  
+
     try {
       await axios.post("http://localhost:4000/api/review", newPost);
       alert("리뷰가 성공적으로 등록되었습니다.");
       navigate("/MR");
     } catch (error) {
-      console.error("리뷰 등록 실패:", error);
+      console.error("등록 실패:", error);
       alert("리뷰 등록에 실패했습니다.");
     }
   };
-  
-  
-
-  if (!user) {
-    return (
-      <div>
-        <h2>로그인 후 게시물을 작성할 수 있습니다.</h2>
-        <button onClick={() => navigate("/login")}>로그인</button>
-      </div>
-    );
-  }
 
   return (
     <div>
       <header>
         <h1>MRS</h1>
         <div className="search-container">
-          <input type="text" className="search-input" placeholder="검색어를 입력하세요." />
+          <input className="search-input" placeholder="검색어를 입력하세요." />
           <button className="search-button">검색</button>
         </div>
         {isLoggedIn && nickname && (
-          <p className="user-nickname" onClick={() => navigate("/profile")}>
+          <p
+            className="user-nickname"
+            style={{ cursor: "pointer" }}
+            onClick={() => navigate("/profile")}
+          >
             {nickname}님
           </p>
         )}
-        <button className="logout-btn" onClick={handleLogout}>
+        <button className="logout-btn" onClick={() => navigate("/logout")}>
           로그아웃
         </button>
       </header>
-      
+
       <nav>
-      <a 
-        href="#" 
-        onClick={(e) => {
-          e.preventDefault();
-          navigate(user ? "/LoginMain" : "/Main");
-        }}
-      >
-        홈
-      </a>
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(isLoggedIn ? "/LoginMain" : "/Main");
+          }}
+        >
+          홈
+        </a>
         <div className="dropdown">
           <a href="MR">리뷰게시판</a>
           <div className="dropdown-content">
@@ -210,18 +192,20 @@ const CreatePost = () => {
         <a href="*">고객센터</a>
       </nav>
 
-      {/* 네비게이션은 생략 가능 */}
-
       <div className="review-container">
         <h2>리뷰 작성</h2>
 
-        {/* 게시판 + 제목 */}
         <div className="top-row">
           <div className="form-group">
             <label>게시판 선택:</label>
-            <select value={category} onChange={(e) => setCategory(e.target.value)}>
-              {categories.map((option) => (
-                <option key={option} value={option}>{option}</option>
+            <select
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+            >
+              {categories.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
               ))}
             </select>
           </div>
@@ -237,64 +221,73 @@ const CreatePost = () => {
           </div>
         </div>
 
-        {/* 사진 + 평가 항목 */}
         <div className="middle-row">
+          <div className="form-group full-width">
+            <label>내용:</label>
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+            />
+          </div>
+
           <div className="form-group">
             <label>사진 추가:</label>
             <div className="review-image-upload">
               <label>
                 {image ? (
-                  <img src={image} alt="첨부 이미지" style={{ width: "100px", height: "auto" }} />
+                  <img src={image} alt="첨부 이미지" />
                 ) : (
                   <span>사진 추가</span>
                 )}
-                <input type="file" accept="image/*" onChange={handleImageChange} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                />
               </label>
             </div>
-          </div>
 
-          <div className="form-group">
-            <label>평가 항목 선택:</label>
-            {ratings.map((item, index) => (
-              <div key={index} className="form-group rating-group-with-remove">
-                <div className="rating-select-wrap">
-                  <select
-                    value={item.aspect}
-                    onChange={(e) => handleAspectChange(index, e.target.value)}
-                  >
-                    {ratingAspects.map((aspect) => (
-                      <option key={aspect} value={aspect}>{aspect}</option>
-                    ))}
-                  </select>
-                  <button
-                    type="button"
-                    className="remove-rating-btn"
-                    onClick={() => handleRemoveRatingField(index)}
-                    disabled={ratings.length === 1}
-                  >
-                    ×
-                  </button>
+            <div className="ratings-bottom">
+              <label>평가 항목 선택:</label>
+              {ratings.map((item, index) => (
+                <div key={index} className="rating-group-with-remove">
+                  <div className="rating-select-wrap">
+                    <select
+                      value={item.aspect}
+                      onChange={(e) =>
+                        handleAspectChange(index, e.target.value)
+                      }
+                    >
+                      {ratingAspects.map((aspect) => (
+                        <option key={aspect} value={aspect}>
+                          {aspect}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      className="remove-rating-btn"
+                      onClick={() => handleRemoveRatingField(index)}
+                      disabled={ratings.length === 1}
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <StarRating
+                    rating={item.score}
+                    setRating={(score) => handleRatingChange(index, score)}
+                  />
                 </div>
-                <p>{item.aspect}에 대한 별점을 선택해주세요.</p>
-                <StarRating
-                  rating={item.score}
-                  setRating={(score) => handleRatingChange(index, score)}
-                />
-              </div>
-            ))}
-            <button type="button" className="add-rating-btn" onClick={handleAddRatingField}>
-              + 항목 추가
-            </button>
+              ))}
+              <button
+                type="button"
+                className="add-rating-btn"
+                onClick={handleAddRatingField}
+              >
+                + 항목 추가
+              </button>
+            </div>
           </div>
-        </div>
-
-        {/* 내용 */}
-        <div className="form-group full-width">
-          <label>내용:</label>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-          />
         </div>
 
         <div className="review-submit">

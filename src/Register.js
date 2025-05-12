@@ -1,76 +1,78 @@
 import React, { useState,useContext } from "react";
 import { UserContext } from "./UserContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "./Register.css";
+
+// API 기본 URL 설정
+const API_BASE_URL = 'http://localhost:4000';
 
 function Register() {
   const navigate = useNavigate();
   const { user, logout } = useContext(UserContext);
-  const [userData, setUserData] = useState({
+  const [formData, setFormData] = useState({
     name: "",
     nickname: "",
     email: "",
     password: "",
     confirmPassword: "",
     age: "",
-    gender: "",
+    gender: ""
   });
-
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setUserData((prevData) => ({
-      ...prevData,
-      [name]: value,
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
 
-    if (userData.password !== userData.confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       setError("비밀번호가 일치하지 않습니다.");
       return;
     }
 
-    console.log("전송할 데이터:", userData);
-
     try {
-      const { confirmPassword, ...requestData } = userData;
-      const response = await axios.post(
-        "http://localhost:4000/register",
-        requestData
-      );
-
-      console.log("서버 응답:", response.data);
+      const response = await axios.post(`${API_BASE_URL}/register`, {
+        name: formData.name,
+        nickname: formData.nickname,
+        email: formData.email,
+        password: formData.password,
+        age: formData.age,
+        gender: formData.gender
+      }, {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        }
+      });
 
       if (response.data.success) {
-        setSuccess("회원가입이 완료되었습니다!");
-        setError("");
-        setUserData({
-          name: "",
-          nickname: "",
-          email: "",
-          password: "",
-          confirmPassword: "",
-          age: "",
-          gender: "",
-        });
+        alert("회원가입이 완료되었습니다!");
+        navigate("/login");
       } else {
-        setError("회원가입에 실패했습니다. 다시 시도해 주세요.");
+        setError(response.data.message || "회원가입에 실패했습니다.");
       }
-    } catch (err) {
-      setError("서버 오류가 발생했습니다.");
+    } catch (error) {
+      console.error('Registration error:', error);
+      if (error.response) {
+        setError(error.response.data.message || "서버 오류가 발생했습니다.");
+      } else {
+        setError("서버와 연결할 수 없습니다.");
+      }
     }
   };
 
   return (
     <div>
       <header>
-        <h1>영화 커뮤니티</h1>
+        <h1>MRS</h1>
         <div className="search-container">
           <input
             type="text"
@@ -139,14 +141,13 @@ function Register() {
       </nav>
 
       <div className="container">
-        <h2>회원가입 페이지 입니다</h2>
         <form id="register-form" onSubmit={handleSubmit}>
           <label htmlFor="name">이름</label>
           <input
             type="text"
             id="name"
             name="name"
-            value={userData.name}
+            value={formData.name}
             onChange={handleChange}
             placeholder="Enter your name"
             required
@@ -157,7 +158,7 @@ function Register() {
             type="text"
             id="nickname"
             name="nickname"
-            value={userData.nickname}
+            value={formData.nickname}
             onChange={handleChange}
             placeholder="Enter your nickname"
             required
@@ -168,7 +169,7 @@ function Register() {
             type="email"
             id="email"
             name="email"
-            value={userData.email}
+            value={formData.email}
             onChange={handleChange}
             placeholder="Enter your email"
             required
@@ -179,7 +180,7 @@ function Register() {
             type="password"
             id="password"
             name="password"
-            value={userData.password}
+            value={formData.password}
             onChange={handleChange}
             placeholder="Enter your password"
             required
@@ -190,7 +191,7 @@ function Register() {
             type="password"
             id="confirmPassword"
             name="confirmPassword"
-            value={userData.confirmPassword}
+            value={formData.confirmPassword}
             onChange={handleChange}
             placeholder="Re-enter your password"
             required
@@ -201,7 +202,7 @@ function Register() {
             type="number"
             id="age"
             name="age"
-            value={userData.age}
+            value={formData.age}
             onChange={handleChange}
             placeholder="Enter your age"
             min="1"
@@ -212,7 +213,7 @@ function Register() {
           <select
             id="gender"
             name="gender"
-            value={userData.gender}
+            value={formData.gender}
             onChange={handleChange}
           >
             <option value="">선택하세요</option>
@@ -221,7 +222,6 @@ function Register() {
           </select>
 
           {error && <p className="error">{error}</p>}
-          {success && <p className="success">{success}</p>}
 
           <button type="submit">회원가입</button>
         </form>

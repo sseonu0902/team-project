@@ -15,10 +15,11 @@ body {
   color: #fff;
   padding: 15px 20px;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end; /* 왼쪽 요소가 없으므로 우측 정렬 */
   align-items: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+
 
 .menu-button {
   background-color: #467fcf;

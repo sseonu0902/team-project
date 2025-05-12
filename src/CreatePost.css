@@ -1,7 +1,6 @@
 .review-container {
   width: 1200px;
-  margin: 120px auto;
-  margin-top: 160px;
+  margin: 160px auto;
   padding: 40px;
   background-color: #ffffff;
   border-radius: 16px;
@@ -22,10 +21,20 @@
   margin-bottom: 30px;
 }
 
+/* 내용 + 사진 */
 .middle-row {
   display: flex;
   gap: 40px;
   margin-bottom: 30px;
+}
+
+/* 평가 항목을 사진과 같은 열에 배치하고 왼쪽 정렬 */
+.ratings-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* ✅ 왼쪽 정렬로 변경 */
+  margin-top: 40px;
+  margin-left: 10px; /* ✅ 살짝 왼쪽으로 이동 */
 }
 
 .form-group {
@@ -37,6 +46,7 @@
 
 .form-group.full-width {
   width: 100%;
+  flex: 2;
 }
 
 .form-group select,
@@ -50,10 +60,10 @@
 
 .form-group textarea {
   resize: vertical;
-  height: 180px;
+  height: 600px;
 }
 
-/* 사진 */
+/* 사진 업로드 박스 */
 .review-image-upload {
   width: 250px;
   height: 150px;
@@ -91,26 +101,40 @@
   display: none;
 }
 
+/* 별점 */
 .star-rating {
   display: flex;
   gap: 5px;
   align-items: center;
 }
 
-.rating-select-wrap {
+/* 평가 항목 한 줄 */
+.rating-group-with-remove {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start; /* ✅ 셀렉트 + 별점 왼쪽 정렬로 통일 */
   gap: 10px;
 }
 
+.rating-select-wrap {
+  display: flex;
+  justify-content: flex-start; /* ✅ 셀렉트박스 + × 버튼 왼쪽 정렬 */
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
 .remove-rating-btn {
-  background-color: #ff4d4f;
+  background-color: #ff4d4f !important;
   border: none;
   color: white;
   font-size: 14px;
-  padding: 4px 8px;
+  padding: 2px 6px;
   border-radius: 6px;
   cursor: pointer;
+  width: auto;
+  min-width: 30px;
+  text-align: center;
 }
 
 .remove-rating-btn:disabled {
@@ -118,15 +142,20 @@
   cursor: not-allowed;
 }
 
+/* 항목 추가 버튼 정렬 및 크기 조절 */
 .add-rating-btn {
-  margin-top: 10px;
   background-color: #eee;
   color: #333;
   border: 1px solid #ccc;
   border-radius: 6px;
-  padding: 8px 12px;
-  font-size: 14px;
+  padding: 6px 12px;
+  font-size: 13px;
   cursor: pointer;
+  width: 120px;
+  margin-top: 10px;
+  margin-left: 0; /* ✅ 왼쪽 정렬로 맞춤 */
+  align-self: flex-start; /* ✅ 셀렉트와 수직 정렬 */
+  height: 36px;
 }
 
 .review-submit {

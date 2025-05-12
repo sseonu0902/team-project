@@ -1,5 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+<<<<<<< HEAD
+=======
+import axios from "axios"; // ⭐ 추가
+>>>>>>> 8f287ae8e7db39d55cc56ad1e2ff9273288681ce
 import "./Profile.css";
 import axios from 'axios';
 
@@ -10,8 +14,13 @@ function Profile() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickname] = useState("");
   const [email, setEmail] = useState("john.doe@example.com");
+<<<<<<< HEAD
   const [point, setPoint] = useState(0);
   const [mileage, setMileage] = useState(0);
+=======
+  const [point, setPoint] = useState(0); // ⭐ 초기 0으로
+  const [mileage, setMileage] = useState(300);
+>>>>>>> 8f287ae8e7db39d55cc56ad1e2ff9273288681ce
   const [profileImage, setProfileImage] = useState(null);
   const [age, setAge] = useState(25);
   const [gender, setGender] = useState("남성");
@@ -27,12 +36,29 @@ function Profile() {
         if (userData.nickname) {
           setNickname(userData.nickname);
           setEmail(userData.email || "john.doe@example.com");
+          if (userData.age) setAge(userData.age);
+          if (userData.gender) setGender(userData.gender);
+
+          // ⭐ 닉네임을 이용해 DB에서 최신 포인트 가져오기
+          axios.get(`http://localhost:4000/api/user-info`, {
+            params: { nickname: userData.nickname },
+          })
+          .then(res => {
+            setPoint(res.data.points); // 포인트 가져옴
+            // 필요한 경우 grade_name도 저장할 수 있음
+          })
+          .catch(err => {
+            console.error("유저 포인트 조회 실패:", err);
+          });
         }
+<<<<<<< HEAD
         if (userData.age) setAge(userData.age);
         if (userData.gender) setGender(userData.gender);
 
         // 로그인 시 백엔드에서 포인트와 마일리지 가져오기
         fetchUserProfile(userData.email);
+=======
+>>>>>>> 8f287ae8e7db39d55cc56ad1e2ff9273288681ce
       }
     }
   }, []);
@@ -69,6 +95,10 @@ function Profile() {
     }
   };
 
+<<<<<<< HEAD
+=======
+  // 레벨 및 다음 레벨 포인트 계산
+>>>>>>> 8f287ae8e7db39d55cc56ad1e2ff9273288681ce
   const getLevelInfo = (point) => {
     const levels = [
       { level: 1, point: 100 },
