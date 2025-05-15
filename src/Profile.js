@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef,useContext } from "react";
-import { UserContext } from "./UserContext";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios"; // ⭐ 추가
 import "./Profile.css";
+import { UserContext } from "./UserContext";
 
 function Profile() {
   const navigate = useNavigate();
@@ -43,27 +44,9 @@ function Profile() {
             console.error("유저 포인트 조회 실패:", err);
           });
         }
-        if (userData.age) setAge(userData.age);
-        if (userData.gender) setGender(userData.gender);
-        // 로그인 시 백엔드에서 포인트와 마일리지 가져오기
-        fetchUserProfile(userData.email);
       }
     }
   }, []);
-
-  // 백엔드에서 사용자 포인트와 마일리지 가져오기
-  const fetchUserProfile = async (email) => {
-    try {
-      const response = await axios.get(`http://localhost:4000/mypage/${email}`);
-      const userData = response.data;
-
-      // 서버에서 포인트와 마일리지 받아오기
-      setPoint(userData.point);
-      setMileage(userData.mileage); // <- 추가된 부분
-    } catch (error) {
-      console.error("Error fetching user profile:", error);
-    }
-  };
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -82,6 +65,8 @@ function Profile() {
       setProfileImage(URL.createObjectURL(file));
     }
   };
+
+  // 레벨 및 다음 레벨 포인트 계산
   const getLevelInfo = (point) => {
     const levels = [
       { level: 1, point: 100 },

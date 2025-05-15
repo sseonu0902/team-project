@@ -109,20 +109,6 @@ app.post("/login", async (req, res) => {
     });
   });
 });
-// 프로필 수정 라우트
-app.put('/editprofile/:email', (req, res) => {
-  const { email } = req.params;
-  const { nickname, age, gender } = req.body;
-
-  const sql = `UPDATE users SET nickname = ?, age = ?, gender = ? WHERE email = ?`;
-  db.query(sql, [nickname, age, gender, email], (err, result) => {
-    if (err) {
-      console.error("프로필 수정 실패:", err);
-      return res.status(500).json({ message: "프로필 수정 실패" });
-    }
-    return res.status(200).json({ message: "프로필 수정 완료" });
-  });
-});
 
 // 유저 포인트 + 등급 정보 가져오기
 app.get("/api/user-info", async (req, res) => {
@@ -152,6 +138,35 @@ app.get("/api/user-info", async (req, res) => {
 app.get("/check-login", (req, res) => {
   // 클라이언트에서 로그인한 유저 정보를 로컬 스토리지에 저장한다고 가정
   res.json({ message: "로그인 상태 확인은 클라이언트에서 관리합니다." });
+});
+
+// 프로필 수정 API
+app.put("/api/user/:id/profile", async (req, res) => {
+  const userId = req.params.id;
+  const { nickname, age, gender } = req.body;
+
+  try {
+    // 닉네임 중복 체크 (자기 자신 제외)
+    const [rows] = await db.promise().query(
+      "SELECT * FROM users WHERE nickname = ? AND user_id != ?",
+      [nickname, userId]
+    );
+
+    if (rows.length > 0) {
+      return res.status(400).json({ message: "이미 사용 중인 닉네임입니다." });
+    }
+
+    // 사용자 정보 업데이트
+    await db.promise().query(
+      "UPDATE users SET nickname = ?, age = ?, gender = ? WHERE user_id = ?",
+      [nickname, age, gender, userId]
+    );
+
+    res.status(200).json({ message: "프로필이 성공적으로 수정되었습니다." });
+  } catch (err) {
+    console.error("프로필 수정 오류:", err);
+    res.status(500).json({ message: "서버 오류 발생" });
+  }
 });
 
 
@@ -211,14 +226,6 @@ app.post("/api/review", async (req, res) => {
         [reviewId, rating_type_id, score]
       );
     }
-
-    // 리뷰 등록 후 포인트 지급 로직 추가
-    const pointsToAdd = 50; // 예시로 리뷰 작성시 50포인트 지급
-    await db.promise().query(
-      "UPDATE users SET points = points + ? WHERE user_id = ?",
-      [pointsToAdd, user_id]
-    );
-
     res.status(201).json({ message: "리뷰 저장 완료" });
 
   } catch (err) {
