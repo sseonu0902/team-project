@@ -1,0 +1,229 @@
+.customer-support {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.customer-support header {
+  background-color: #3498db;
+  color: #fff;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.customer-support .search-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.customer-support .search-input {
+  padding: 8px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.customer-support .search-button {
+  padding: 8px 12px;
+  background-color: #2980b9;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.customer-support .logout-btn {
+  margin-left: 20px;
+  padding: 8px 12px;
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.customer-support nav {
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 15px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  align-items: stretch;
+}
+
+.customer-support nav > a,
+.customer-support .dropdown {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.customer-support nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  padding: 10px 15px;
+  transition: all 0.3s;
+}
+
+.customer-support nav a:hover {
+  color: #3498db;
+}
+
+.customer-support .dropdown {
+  position: relative;
+}
+
+.customer-support .dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.customer-support .dropdown-content a {
+  display: block;
+  padding: 10px 15px;
+  color: #333;
+  text-decoration: none;
+}
+
+.customer-support .dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.customer-support .dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.customer-support .container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  max-width: 1200px;
+  margin: 40px auto;
+}
+
+.customer-support .faq,
+.customer-support .contact-form,
+.customer-support .inquiry-history {
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.customer-support .inquiry-list {
+  margin-top: 20px;
+}
+
+.customer-support .inquiry-item {
+  border: 1px solid #eee;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.customer-support .inquiry-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: #666;
+}
+
+.customer-support .inquiry-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.customer-support .status-pending {
+  background-color: #ffeeba;
+  color: #856404;
+}
+
+.customer-support .status-answered {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.customer-support .inquiry-content {
+  margin-bottom: 10px;
+}
+
+.customer-support .inquiry-answer {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.customer-support h2 {
+  margin-top: 0;
+}
+
+.customer-support .faq-item {
+  margin-bottom: 15px;
+}
+
+.customer-support .faq-question {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.customer-support .faq-answer {
+  display: none;
+  margin-top: 5px;
+  color: #555;
+}
+
+.customer-support form {
+  display: flex;
+  flex-direction: column;
+}
+
+.customer-support label {
+  margin-top: 10px;
+}
+
+.customer-support input,
+.customer-support textarea {
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.customer-support textarea {
+  resize: vertical;
+  height: 180px;
+}
+
+.customer-support button {
+  margin-top: 20px;
+  padding: 14px;
+  background-color: #2980b9;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.customer-support button:hover {
+  background-color: #1f618d;
+}
