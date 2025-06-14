@@ -1,3 +1,4 @@
+// 상단 import 동일
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
 import { Link, useNavigate } from "react-router-dom";
@@ -40,6 +41,10 @@ function FreeBoard() {
     navigate("/Main");
   };
 
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("ko-KR", {
@@ -77,25 +82,31 @@ function FreeBoard() {
           <button className="search-button">검색</button>
         </div>
 
-        {isLoggedIn && nickname && (
-          <div className="user-info">
-            <img
-              src={profileImage || "/images/BasicProfile.png"}
-              alt="프로필"
-              className="preview-image"
-            />
-            <p
-              className="user-nickname"
-              onClick={() => navigate("/profile")}
-              style={{ cursor: "pointer" }}
-            >
-              {nickname}님
-            </p>
-            <button className="logout-btn" onClick={handleLogout}>
-              로그아웃
+        <div className="user-info">
+          {isLoggedIn && nickname ? (
+            <>
+              <img
+                src={profileImage || "/images/BasicProfile.png"}
+                alt="프로필"
+                className="preview-image"
+              />
+              <p
+                className="user-nickname"
+                onClick={() => navigate("/profile")}
+                style={{ cursor: "pointer" }}
+              >
+                {nickname}님
+              </p>
+              <button className="logout-btn" onClick={handleLogout}>
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <button className="login-btn" onClick={handleLogin}>
+              로그인
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </header>
 
       {/* 네비게이션 */}
@@ -127,8 +138,8 @@ function FreeBoard() {
         <div className="dropdown">
           <a href="/community">상영 예정작</a>
           <div className="dropdown-content">
-            <a href="#">영화관 상영 예정작</a>
-            <a href="#">OTT 상영 예정작</a>
+            <a href="TheaterComingSoon">영화관 상영 예정작</a>
+            <a href="OTTComingSoon">OTT 상영 예정작</a>
           </div>
         </div>
         <div className="dropdown">

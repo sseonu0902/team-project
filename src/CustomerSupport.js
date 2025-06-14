@@ -40,8 +40,22 @@ function CustomerSupport() {
     navigate("/Main");
   };
 
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!isLoggedIn) {
+      alert("로그인 후 사용 가능합니다.");
+      navigate("/login");
+      return;
+    }
+    alert("문의가 제출되었습니다."); // 실제 백엔드 처리 연결 가능
+  };
+
   return (
-    <div>
+    <div className="profile-card">
       <header>
         <h1>MRS</h1>
         <div className="search-container">
@@ -52,25 +66,27 @@ function CustomerSupport() {
           />
           <button className="search-button">검색</button>
         </div>
-        {isLoggedIn && nickname && (
-          <div className="user-info">
-            <img
-              src={profileImage || "/images/BasicProfile.png"}
-              alt="프로필"
-              className="preview-image"
-            />
-            <p
-              className="user-nickname"
-              style={{ cursor: "pointer" }}
-              onClick={() => navigate("/profile")}
-            >
-              {nickname}님
-            </p>
-            <button className="logout-btn" onClick={handleLogout}>
-              로그아웃
+        <div className="user-info">
+          {isLoggedIn && nickname ? (
+            <>
+              <img
+                src={profileImage || "/images/BasicProfile.png"}
+                alt="프로필"
+                className="preview-image"
+              />
+              <p className="user-nickname" onClick={() => navigate("/profile")}>
+                {nickname}님
+              </p>
+              <button className="logout-btn" onClick={handleLogout}>
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <button className="login-btn" onClick={handleLogin}>
+              로그인
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </header>
 
       <nav>
@@ -99,10 +115,10 @@ function CustomerSupport() {
           </div>
         </div>
         <div className="dropdown">
-          <a href="/community">상영 예정작</a>
+          <a href="#">상영 예정작</a>
           <div className="dropdown-content">
-            <a href="#">영화관 상영 예정작</a>
-            <a href="#">OTT 상영 예정작</a>
+            <a href="/TheaterComingSoon">영화관 상영 예정작</a>
+            <a href="/OTTComingSoon">OTT 상영 예정작</a>
           </div>
         </div>
         <div className="dropdown">
@@ -124,10 +140,10 @@ function CustomerSupport() {
             <a href="#">메가박스</a>
           </div>
         </div>
-        <a href="CustomerSupport">고객센터</a>
+        <a href="/CustomerSupport">고객센터</a>
       </nav>
 
-      <div className="custom-container">
+      <div className="customer-support-card">
         <section className="custom-faq">
           <h2>자주 묻는 질문 (FAQ)</h2>
           {[
@@ -171,8 +187,7 @@ function CustomerSupport() {
                 <strong>답변:</strong>
                 <p>
                   안녕하세요. 해당 게시물은 커뮤니티 가이드라인 위반으로
-                  삭제되었습니다. 자세한 내용은 운영정책을 참고해 주시기
-                  바랍니다.
+                  삭제되었습니다. 자세한 내용은 운영정책을 참고해 주세요.
                 </p>
               </div>
             </div>
@@ -192,9 +207,9 @@ function CustomerSupport() {
           </div>
         </section>
 
-        <section className="custom-contact-form">
+        <section className="custom-form">
           <h2>문의하기</h2>
-          <form>
+          <form onSubmit={handleSubmit}>
             <label htmlFor="name">이름</label>
             <input type="text" id="name" name="name" required />
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./Main.css";
 
 function Main() {
@@ -14,6 +14,15 @@ function Main() {
   const totalCards = 10;
   const visibleCount = 2;
   const cardWidthPercent = 100 / totalCards;
+
+  const heroImages = [
+    "/images/alex-avalos-dnUNjIUCg5c-unsplash.jpg",
+    "/images/daniel-k-cheung-i5Lmb7qPR7s-unsplash.jpg",
+    "/images/geoffrey-moffett-TFRezw7pQwI-unsplash.jpg",
+    "/images/anika-de-klerk-dWYjy9zIiF8-unsplash.jpg",
+    "/images/felix-mooneeram-evlkOfkQ5rE-unsplash.jpg",
+  ];
+  const [heroIndex, setHeroIndex] = useState(0);
 
   const fetchMoviesByCategory = async (category) => {
     let url = "";
@@ -80,12 +89,26 @@ function Main() {
     }
   }, []);
 
+  useEffect(() => {
+    heroImages.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleLogout = () => {
     localStorage.removeItem("user");
     localStorage.removeItem("isLoggedIn");
     setIsLoggedIn(false);
     setNickname("");
-    navigate("/Main");
+    navigate("/main");
   };
 
   const scrollToSection = async (id) => {
@@ -97,14 +120,12 @@ function Main() {
 
   const nextSlide = () => {
     const maxIndex = totalCards - visibleCount;
-    const newIndex = currentIndex >= maxIndex ? 0 : currentIndex + visibleCount;
-    setCurrentIndex(newIndex);
+    setCurrentIndex(currentIndex >= maxIndex ? 0 : currentIndex + visibleCount);
   };
 
   const prevSlide = () => {
     const maxIndex = totalCards - visibleCount;
-    const newIndex = currentIndex <= 0 ? maxIndex : currentIndex - visibleCount;
-    setCurrentIndex(newIndex);
+    setCurrentIndex(currentIndex <= 0 ? maxIndex : currentIndex - visibleCount);
   };
 
   return (
@@ -115,14 +136,13 @@ function Main() {
           <input className="search-input" placeholder="검색어를 입력하세요." />
           <button className="search-button">검색</button>
         </div>
-
         {isLoggedIn && nickname ? (
           <div className="user-info">
-            {profileImage ? (
-              <img src={profileImage} alt="프로필" className="profile-image" />
-            ) : (
-              <div className="default-profile-circle"></div>
-            )}
+            <img
+              src={profileImage || "/images/BasicProfile.png"}
+              alt="프로필"
+              className="profile-image"
+            />
             <p className="user-nickname" onClick={() => navigate("/profile")}>
               {nickname}님
             </p>
@@ -138,21 +158,13 @@ function Main() {
       </header>
 
       <nav>
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate(isLoggedIn ? "/LoginMain" : "/Main");
-          }}
-        >
-          홈
-        </a>
+        <Link to="/main">홈</Link>
         <div className="dropdown">
           <a href="#">리뷰게시판</a>
           <div className="dropdown-content">
-            <a href="MR">영화 리뷰 게시판</a>
-            <a href="OTTMR">OTT 게시판</a>
-            <a href="FreeBoard">자유 게시판</a>
+            <Link to="/MR">영화 리뷰 게시판</Link>
+            <Link to="/OTTMR">OTT 게시판</Link>
+            <Link to="/FreeBoard">자유 게시판</Link>
           </div>
         </div>
         <div className="dropdown">
@@ -165,8 +177,8 @@ function Main() {
         <div className="dropdown">
           <a href="#">상영 예정작</a>
           <div className="dropdown-content">
-            <a href="#">영화관 상영 예정작</a>
-            <a href="#">OTT 상영 예정작</a>
+            <Link to="/TheaterComingSoon">영화관 상영 예정작</Link>
+            <Link to="/OTTComingSoon">OTT 상영 예정작</Link>
           </div>
         </div>
         <div className="dropdown">
@@ -188,19 +200,13 @@ function Main() {
             <a href="#">메가박스</a>
           </div>
         </div>
-        <a href="CustomerSupport">고객센터</a>
+        <Link to="/CustomerSupport">고객센터</Link>
       </nav>
 
-      <div className="hero-section">
-        <div className="hero-overlay">
-          <h2 className="hero-title">Explore the World of Cinema</h2>
-          <p className="hero-subtitle">
-            Discover your next favorite movie. Personalized recommendations
-            await.
-          </p>
-          <button className="hero-button">🎬 View Featured Movie</button>
-        </div>
-      </div>
+      <div
+        className="hero-section"
+        style={{ backgroundImage: `url(${heroImages[heroIndex]})` }}
+      ></div>
 
       <div className="carousel-nav">
         {categoryList.map((cat) => (

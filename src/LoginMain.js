@@ -14,39 +14,58 @@ function Main() {
   const totalCards = 10;
   const visibleCount = 2;
   const cardWidthPercent = 100 / totalCards;
+
+  const heroImages = [
+    "/images/alex-avalos-dnUNjIUCg5c-unsplash.jpg",
+    "/images/daniel-k-cheung-i5Lmb7qPR7s-unsplash.jpg",
+    "/images/geoffrey-moffett-TFRezw7pQwI-unsplash.jpg",
+    "/images/anika-de-klerk-dWYjy9zIiF8-unsplash.jpg",
+    "/images/felix-mooneeram-evlkOfkQ5rE-unsplash.jpg",
+  ];
+  const [heroIndex, setHeroIndex] = useState(0);
+  const [isImageLoaded, setIsImageLoaded] = useState(false);
+
+  // 이미지 로드 후 상태 변경
+  useEffect(() => {
+    const img = new Image();
+    img.src = heroImages[heroIndex];
+    img.onload = () => setIsImageLoaded(true);
+  }, [heroIndex]);
+
+  // 이미지 자동 전환
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsImageLoaded(false); // 로딩 전환 효과 적용
+      setHeroIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const fetchMoviesByCategory = async (category) => {
     let url = "";
-
     switch (category) {
-      case "popular": // 인기 TOP10
+      case "popular":
         url = `https://api.themoviedb.org/3/movie/popular?api_key=6cf75faf0d9e5849e3c6650632ae6ff5&language=ko-KR&region=KR&page=1`;
         break;
-
-      case "recommend": // 추천 수 TOP10 (평점 높은 영화)
+      case "recommend":
         url = `https://api.themoviedb.org/3/movie/top_rated?api_key=6cf75faf0d9e5849e3c6650632ae6ff5&language=ko-KR&region=KR&page=1`;
         break;
-
-      case "rising": // 급 상승 TOP10 (지금 상영 중인 영화)
+      case "rising":
         url = `https://api.themoviedb.org/3/movie/now_playing?api_key=6cf75faf0d9e5849e3c6650632ae6ff5&language=ko-KR&region=KR&page=1`;
         break;
-
-      case "falling": // 급 하락 TOP10 (임시: 인기 영화 10페이지, 인기 낮은 편 가정)
+      case "falling":
         url = `https://api.themoviedb.org/3/movie/popular?api_key=6cf75faf0d9e5849e3c6650632ae6ff5&language=ko-KR&region=KR&page=10`;
         break;
-
-      case "ott": // OTT 인기 TOP10 (임시로 popular 2페이지 데이터)
+      case "ott":
         url = `https://api.themoviedb.org/3/movie/popular?api_key=6cf75faf0d9e5849e3c6650632ae6ff5&language=ko-KR&region=KR&page=2`;
         break;
-
       default:
         url = `https://api.themoviedb.org/3/movie/popular?api_key=6cf75faf0d9e5849e3c6650632ae6ff5&language=ko-KR&region=KR&page=1`;
-        break;
     }
 
     try {
       const response = await fetch(url);
       const data = await response.json();
-      // 영화 리스트 중 상위 10개만 반환
       return data.results.slice(0, 10);
     } catch (error) {
       console.error("API 호출 오류:", error);
@@ -64,23 +83,21 @@ function Main() {
 
   useEffect(() => {
     setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true");
+
     const loadInitialMovies = async () => {
       const initialMovies = await fetchMoviesByCategory("popular");
       setMovies(initialMovies);
     };
     loadInitialMovies();
 
-    const loginStatus = localStorage.getItem("isLoggedIn") === "true";
-    if (loginStatus) {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        try {
-          const userData = JSON.parse(storedUser);
-          if (userData?.nickname) setNickname(userData.nickname);
-          if (userData?.profileImage) setProfileImage(userData.profileImage);
-        } catch (e) {
-          console.warn("⚠ JSON 파싱 실패:", e);
-        }
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        if (userData?.nickname) setNickname(userData.nickname);
+        if (userData?.profileImage) setProfileImage(userData.profileImage);
+      } catch (e) {
+        console.warn("⚠ JSON 파싱 실패:", e);
       }
     }
   }, []);
@@ -112,6 +129,7 @@ function Main() {
 
   return (
     <div>
+      {/* 헤더 */}
       <header>
         <h1>MRS</h1>
         <div className="search-container">
@@ -122,7 +140,6 @@ function Main() {
           />
           <button className="search-button">검색</button>
         </div>
-
         {isLoggedIn && nickname && (
           <div className="user-info">
             <img
@@ -130,11 +147,7 @@ function Main() {
               alt="프로필"
               className="preview-image"
             />
-            <p
-              className="user-nickname"
-              onClick={() => navigate("/profile")}
-              style={{ cursor: "pointer" }}
-            >
+            <p className="user-nickname" onClick={() => navigate("/profile")}>
               {nickname}님
             </p>
             <button className="logout-btn" onClick={handleLogout}>
@@ -170,10 +183,10 @@ function Main() {
           </div>
         </div>
         <div className="dropdown">
-          <a href="/community">상영 예정작</a>
+          <a href="#">상영 예정작</a>
           <div className="dropdown-content">
-            <a href="#">영화관 상영 예정작</a>
-            <a href="#">OTT 상영 예정작</a>
+            <a href="/TheaterComingSoon">영화관 상영 예정작</a>
+            <a href="/OTTComingSoon">OTT 상영 예정작</a>
           </div>
         </div>
         <div className="dropdown">
@@ -198,16 +211,10 @@ function Main() {
         <a href="/CustomerSupport">고객센터</a>
       </nav>
 
-      <div className="hero-section">
-        <div className="hero-overlay">
-          <h2 className="hero-title">Explore the World of Cinema</h2>
-          <p className="hero-subtitle">
-            Discover your next favorite movie. Personalized recommendations
-            await.
-          </p>
-          <button className="hero-button">🎬 View Featured Movie</button>
-        </div>
-      </div>
+      <div
+        className="hero-section"
+        style={{ backgroundImage: `url(${heroImages[heroIndex]})` }}
+      ></div>
 
       <div className="carousel-nav">
         {categoryList.map((cat) => (

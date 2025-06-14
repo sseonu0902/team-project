@@ -40,6 +40,10 @@ function MR() {
     navigate("/Main");
   };
 
+  const handleLogin = () => {
+    navigate("/login");
+  };
+
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString("ko-KR", {
@@ -53,17 +57,13 @@ function MR() {
     const fetchPosts = async () => {
       try {
         const response = await axios.get("http://localhost:4000/api/review", {
-          params: {
-            category: category,
-            sort: sort,
-          },
+          params: { category, sort },
         });
         setPosts(response.data);
       } catch (error) {
         console.error("게시물 가져오기 실패:", error);
       }
     };
-
     fetchPosts();
   }, [category, sort]);
 
@@ -81,25 +81,31 @@ function MR() {
           <button className="search-button">검색</button>
         </div>
 
-        {isLoggedIn && nickname && (
-          <div className="user-info">
-            <img
-              src={profileImage || "/images/BasicProfile.png"}
-              alt="프로필"
-              className="preview-image"
-            />
-            <p
-              className="user-nickname"
-              onClick={() => navigate("/profile")}
-              style={{ cursor: "pointer" }}
-            >
-              {nickname}님
-            </p>
-            <button className="logout-btn" onClick={handleLogout}>
-              로그아웃
+        <div className="user-info">
+          {isLoggedIn && nickname ? (
+            <>
+              <img
+                src={profileImage || "/images/BasicProfile.png"}
+                alt="프로필"
+                className="preview-image"
+              />
+              <p
+                className="user-nickname"
+                onClick={() => navigate("/profile")}
+                style={{ cursor: "pointer" }}
+              >
+                {nickname}님
+              </p>
+              <button className="logout-btn" onClick={handleLogout}>
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <button className="login-btn" onClick={handleLogin}>
+              로그인
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </header>
 
       {/* 네비게이션 */}
@@ -131,8 +137,8 @@ function MR() {
         <div className="dropdown">
           <a href="/community">상영 예정작</a>
           <div className="dropdown-content">
-            <a href="#">영화관 상영 예정작</a>
-            <a href="#">OTT 상영 예정작</a>
+            <a href="TheaterComingSoon">영화관 상영 예정작</a>
+            <a href="OTTComingSoon">OTT 상영 예정작</a>
           </div>
         </div>
         <div className="dropdown">
@@ -182,7 +188,6 @@ function MR() {
             >
               글쓰기
             </button>
-
             <select
               className="sort-dropdown"
               value={sort}

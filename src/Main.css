@@ -53,7 +53,21 @@ header {
   transition: background-color 0.3s ease-in-out;
 }
 
-.login-btn,
+.login-btn {
+  background-color: #cdb893 !important;
+  color: #1e1e1e !important;
+  border: none !important;
+  padding: 8px 12px !important;
+  cursor: pointer !important;
+  border-radius: 5px !important;
+  font-size: 14px !important;
+  width: 80px !important;
+  transition: background-color 0.3s !important;
+  z-index: 900;
+  margin-right: 15px;
+  position: relative;
+}
+
 .logout-btn {
   background-color: #cdb893 !important;
   color: #1e1e1e !important;
@@ -65,16 +79,21 @@ header {
   width: 80px !important;
   transition: background-color 0.3s !important;
   z-index: 900;
+  order: -1;
+  margin-left: auto;
+  margin-bottom: -1px !important;
+  position: relative;
 }
 
-.login-btn {
-  margin-left: -90px !important;
-  bottom: 25px !important;
-}
-
-.logout-btn {
-  margin-right: -22px !important;
-  bottom: 13px !important;
+/* ✅ 공통 hover 효과 */
+.search-button:hover,
+.login-btn:hover,
+.logout-btn:hover,
+.carousel-button:hover,
+.carousel-nav button:hover {
+  background-color: #bfa77a !important;
+  color: #1e1e1e !important;
+  transition: background-color 0.3s ease-in-out;
 }
 
 nav {
@@ -109,43 +128,40 @@ nav a:hover,
   color: #f5f5f5;
 }
 
+/* ✅ 히어로 이미지 영역 */
 .hero-section {
-  background-color: #1e1e1e;
-  height: 400px;
   position: relative;
+  height: 450px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0;
+  transition: background-image 1s ease-in-out;
 }
 
 .hero-overlay {
-  background-color: rgba(0, 0, 0, 0.4);
-  height: 100%;
-  color: #f5f5f5;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 40px 60px;
+  border-radius: 12px;
   text-align: center;
 }
 
 .hero-title {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 10px;
 }
 
 .hero-subtitle {
-  font-size: 16px;
-  margin: 10px 0;
+  font-size: 18px;
+  color: #f0f0f0;
 }
 
-.hero-button {
-  background-color: #cdb893;
-  border: none;
-  padding: 10px 20px;
-  color: #1e1e1e;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 16px;
-}
-
+/* ✅ 캐러셀 영역 */
 .carousel-nav {
   display: flex;
   flex-wrap: wrap;
@@ -299,7 +315,7 @@ footer {
   color: #f5f5f5;
   cursor: pointer;
   margin-right: 90px;
-  margin-bottom: 30px;
+  margin-top: -5px;
   transition: color 0.3s;
 }
 
@@ -310,36 +326,18 @@ footer {
 .user-info {
   display: flex;
   align-items: center;
-  position: absolute;
-  top: 0px;
-  margin-right: 3px;
+  justify-content: flex-end;
   gap: 10px;
-  z-index: 1001;
+  margin-right: 19px;
+  margin-top: 20px;
+  white-space: nowrap; /* ✅ 닉네임 옆에 버튼 등이 줄바꿈되지 않게 */
 }
 
-.profile-image,
-.default-profile-circle {
+.preview-image {
   width: 36px;
   height: 36px;
   border-radius: 50%;
   object-fit: cover;
   margin-right: 8px;
-  margin-bottom: 10px;
-}
-
-.default-profile-circle {
-  background-color: #888;
-  display: inline-block;
-}
-
-/* 공통 hover 효과 */
-.search-button:hover,
-.login-btn:hover,
-.logout-btn:hover,
-.hero-button:hover,
-.carousel-button:hover,
-.carousel-nav button:hover {
-  background-color: #bfa77a !important;
-  color: #1e1e1e !important;
-  transition: background-color 0.3s ease-in-out;
+  margin-top: -15px;
 }
