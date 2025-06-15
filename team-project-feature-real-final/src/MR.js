@@ -6,10 +6,43 @@ import "./MR.css";
 
 function MR() {
   const navigate = useNavigate();
-  const { user, logout } = useContext(UserContext);
+  const { logout } = useContext(UserContext);
   const [posts, setPosts] = useState([]);
   const [sort, setSort] = useState("date");
   const [category, setCategory] = useState("현재 상영 영화 게시판");
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [nickname, setNickname] = useState("");
+  const [profileImage, setProfileImage] = useState("");
+
+  useEffect(() => {
+    const loginStatus = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(loginStatus);
+
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        if (userData?.nickname) setNickname(userData.nickname);
+        if (userData?.profileImage) setProfileImage(userData.profileImage);
+      } catch (e) {
+        console.warn("⚠ 사용자 정보 파싱 실패:", e);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.setItem("isLoggedIn", "false");
+    setIsLoggedIn(false);
+    setNickname("");
+    logout();
+    navigate("/Main");
+  };
+
+  const handleLogin = () => {
+    navigate("/login");
+  };
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -24,17 +57,13 @@ function MR() {
     const fetchPosts = async () => {
       try {
         const response = await axios.get("http://localhost:4000/api/review", {
-          params: {
-            category: category,
-            sort: sort,
-          },
+          params: { category, sort },
         });
         setPosts(response.data);
       } catch (error) {
         console.error("게시물 가져오기 실패:", error);
       }
     };
-
     fetchPosts();
   }, [category, sort]);
 
@@ -52,67 +81,64 @@ function MR() {
           <button className="search-button">검색</button>
         </div>
 
-        {!user && (
-          <button className="login-btn" onClick={() => navigate("/login")}>
-            로그인
-          </button>
-        )}
-
-        {user && (
-          <div className="user-info">
-            {user.profileImage ? (
+        <div className="user-info">
+          {isLoggedIn && nickname ? (
+            <>
               <img
-                src={user.profileImage}
+                src={profileImage || "/images/BasicProfile.png"}
                 alt="프로필"
-                className="profile-image"
+                className="preview-image"
               />
-            ) : (
-              <div className="default-profile-circle"></div>
-            )}
-            <p
-              className="user-nickname"
-              style={{ cursor: "pointer" }}
-              onClick={() => navigate("/profile")}
-            >
-              {user.nickname}님
-            </p>
-            <button className="logout-btn" onClick={logout}>
-              로그아웃
+              <p
+                className="user-nickname"
+                onClick={() => navigate("/profile")}
+                style={{ cursor: "pointer" }}
+              >
+                {nickname}님
+              </p>
+              <button className="logout-btn" onClick={handleLogout}>
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <button className="login-btn" onClick={handleLogin}>
+              로그인
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </header>
 
+      {/* 네비게이션 */}
       <nav>
         <a
           href="#"
           onClick={(e) => {
             e.preventDefault();
-            navigate(user ? "/LoginMain" : "/Main");
+            navigate(isLoggedIn ? "/LoginMain" : "/Main");
           }}
         >
           홈
         </a>
         <div className="dropdown">
-          <a href="MR">리뷰게시판</a>
+          <a href="#">리뷰게시판</a>
           <div className="dropdown-content">
-            <a href="MR">영화 리뷰 게시판</a>
-            <a href="OTTMR">OTT 게시판</a>
-            <a href="FreeBoard">자유 게시판</a>
+            <a href="/MR">영화 리뷰 게시판</a>
+            <a href="/OTTMR">OTT 게시판</a>
+            <a href="/FreeBoard">자유 게시판</a>
           </div>
         </div>
         <div className="dropdown">
-          <a href="/genre">핫 이슈</a>
+          <a href="#">핫 이슈</a>
           <div className="dropdown-content">
-            <a href="#">TOP10 영화</a>
+            <a href="/Top10">TOP10 영화</a>
             <a href="#">영화 뉴스</a>
           </div>
         </div>
         <div className="dropdown">
           <a href="/community">상영 예정작</a>
           <div className="dropdown-content">
-            <a href="#">영화관 상영 예정작</a>
-            <a href="#">OTT 상영 예정작</a>
+            <a href="TheaterComingSoon">영화관 상영 예정작</a>
+            <a href="OTTComingSoon">OTT 상영 예정작</a>
           </div>
         </div>
         <div className="dropdown">
@@ -134,7 +160,7 @@ function MR() {
             <a href="#">메가박스</a>
           </div>
         </div>
-        <a href="CustomerSupport">고객센터</a>
+        <a href="/CustomerSupport">고객센터</a>
       </nav>
 
       {/* 메인 레이아웃 */}
@@ -142,24 +168,13 @@ function MR() {
         {/* 사이드바 */}
         <aside className="sidebar">
           <ul>
-            <li
-              className={category === "현재 상영 영화 게시판" ? "active" : ""}
-              onClick={() => setCategory("현재 상영 영화 게시판")}
-            >
+            <li onClick={() => setCategory("현재 상영 영화 게시판")}>
               영화 커뮤니티
             </li>
-            <li
-              className={category === "OTT 영화 게시판" ? "active" : ""}
-              onClick={() => setCategory("OTT 영화 게시판")}
-            >
+            <li onClick={() => setCategory("OTT 영화 게시판")}>
               OTT 영화 커뮤니티
             </li>
-            <li
-              className={category === "자유게시판" ? "active" : ""}
-              onClick={() => setCategory("자유게시판")}
-            >
-              자유게시판
-            </li>
+            <li onClick={() => setCategory("자유게시판")}>자유게시판</li>
           </ul>
         </aside>
 
@@ -173,7 +188,6 @@ function MR() {
             >
               글쓰기
             </button>
-
             <select
               className="sort-dropdown"
               value={sort}

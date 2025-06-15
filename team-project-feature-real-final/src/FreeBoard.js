@@ -1,3 +1,4 @@
+// 상단 import 동일
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,10 +7,43 @@ import "./FreeBoard.css";
 
 function FreeBoard() {
   const navigate = useNavigate();
-  const { user, logout } = useContext(UserContext);
+  const { logout } = useContext(UserContext);
   const [posts, setPosts] = useState([]);
   const [sort, setSort] = useState("date");
   const [category, setCategory] = useState("자유게시판");
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [nickname, setNickname] = useState("");
+  const [profileImage, setProfileImage] = useState("");
+
+  useEffect(() => {
+    const loginStatus = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(loginStatus);
+
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        if (userData?.nickname) setNickname(userData.nickname);
+        if (userData?.profileImage) setProfileImage(userData.profileImage);
+      } catch (e) {
+        console.warn("⚠ 사용자 정보 파싱 실패:", e);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.setItem("isLoggedIn", "false");
+    setIsLoggedIn(false);
+    setNickname("");
+    logout();
+    navigate("/Main");
+  };
+
+  const handleLogin = () => {
+    navigate("/login");
+  };
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -24,17 +58,13 @@ function FreeBoard() {
     const fetchPosts = async () => {
       try {
         const response = await axios.get("http://localhost:4000/api/review", {
-          params: {
-            category: category,
-            sort: sort,
-          },
+          params: { category, sort },
         });
         setPosts(response.data);
       } catch (error) {
         console.error("게시물 가져오기 실패:", error);
       }
     };
-
     fetchPosts();
   }, [category, sort]);
 
@@ -52,75 +82,64 @@ function FreeBoard() {
           <button className="search-button">검색</button>
         </div>
 
-        {!user && (
-          <>
-            <button className="login-btn" onClick={() => navigate("/login")}>
+        <div className="user-info">
+          {isLoggedIn && nickname ? (
+            <>
+              <img
+                src={profileImage || "/images/BasicProfile.png"}
+                alt="프로필"
+                className="preview-image"
+              />
+              <p
+                className="user-nickname"
+                onClick={() => navigate("/profile")}
+                style={{ cursor: "pointer" }}
+              >
+                {nickname}님
+              </p>
+              <button className="logout-btn" onClick={handleLogout}>
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <button className="login-btn" onClick={handleLogin}>
               로그인
             </button>
-            <button
-              className="register-btn"
-              onClick={() => navigate("/register")}
-            >
-              회원가입
-            </button>
-          </>
-        )}
-
-        {user && (
-          <div className="user-info">
-            {user.profileImage ? (
-              <img
-                src={user.profileImage}
-                alt="프로필"
-                className="profile-image"
-              />
-            ) : (
-              <div className="default-profile-circle"></div>
-            )}
-            <p
-              className="user-nickname"
-              style={{ cursor: "pointer" }}
-              onClick={() => navigate("/profile")}
-            >
-              {user.nickname}님
-            </p>
-            <button className="logout-btn" onClick={logout}>
-              로그아웃
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </header>
 
+      {/* 네비게이션 */}
       <nav>
         <a
           href="#"
           onClick={(e) => {
             e.preventDefault();
-            navigate(user ? "/LoginMain" : "/Main");
+            navigate(isLoggedIn ? "/LoginMain" : "/Main");
           }}
         >
           홈
         </a>
         <div className="dropdown">
-          <a href="MR">리뷰게시판</a>
+          <a href="#">리뷰게시판</a>
           <div className="dropdown-content">
-            <a href="MR">영화 리뷰 게시판</a>
-            <a href="OTTMR">OTT 게시판</a>
-            <a href="FreeBoard">자유 게시판</a>
+            <a href="/MR">영화 리뷰 게시판</a>
+            <a href="/OTTMR">OTT 게시판</a>
+            <a href="/FreeBoard">자유 게시판</a>
           </div>
         </div>
         <div className="dropdown">
-          <a href="/genre">핫 이슈</a>
+          <a href="#">핫 이슈</a>
           <div className="dropdown-content">
-            <a href="#">TOP10 영화</a>
+            <a href="/Top10">TOP10 영화</a>
             <a href="#">영화 뉴스</a>
           </div>
         </div>
         <div className="dropdown">
           <a href="/community">상영 예정작</a>
           <div className="dropdown-content">
-            <a href="#">영화관 상영 예정작</a>
-            <a href="#">OTT 상영 예정작</a>
+            <a href="TheaterComingSoon">영화관 상영 예정작</a>
+            <a href="OTTComingSoon">OTT 상영 예정작</a>
           </div>
         </div>
         <div className="dropdown">
@@ -142,7 +161,7 @@ function FreeBoard() {
             <a href="#">메가박스</a>
           </div>
         </div>
-        <a href="CustomerSupport">고객센터</a>
+        <a href="/CustomerSupport">고객센터</a>
       </nav>
 
       {/* 메인 레이아웃 */}
@@ -164,14 +183,12 @@ function FreeBoard() {
         <main className="main-content">
           <div className="board-header">
             <h3>자유게시판</h3>
-
             <button
               className="write-button"
               onClick={() => navigate("/CreatePost")}
             >
               글쓰기
             </button>
-
             <select
               className="sort-dropdown"
               value={sort}

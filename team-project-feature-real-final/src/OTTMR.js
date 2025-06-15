@@ -1,3 +1,4 @@
+// 기존 import 유지
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,10 +7,43 @@ import "./OTTMR.css";
 
 function OTTMR() {
   const navigate = useNavigate();
-  const { user, logout } = useContext(UserContext);
+  const { logout } = useContext(UserContext);
   const [posts, setPosts] = useState([]);
   const [sort, setSort] = useState("date");
   const [category, setCategory] = useState("OTT 영화 게시판");
+
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [nickname, setNickname] = useState("");
+  const [profileImage, setProfileImage] = useState("");
+
+  useEffect(() => {
+    const loginStatus = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(loginStatus);
+
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        if (userData?.nickname) setNickname(userData.nickname);
+        if (userData?.profileImage) setProfileImage(userData.profileImage);
+      } catch (e) {
+        console.warn("⚠ 사용자 정보 파싱 실패:", e);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.setItem("isLoggedIn", "false");
+    setIsLoggedIn(false);
+    setNickname("");
+    logout();
+    navigate("/Main");
+  };
+
+  const handleLogin = () => {
+    navigate("/login");
+  };
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
@@ -52,75 +86,64 @@ function OTTMR() {
           <button className="search-button">검색</button>
         </div>
 
-        {!user && (
-          <>
-            <button className="login-btn" onClick={() => navigate("/login")}>
+        <div className="user-info">
+          {isLoggedIn && nickname ? (
+            <>
+              <img
+                src={profileImage || "/images/BasicProfile.png"}
+                alt="프로필"
+                className="preview-image"
+              />
+              <p
+                className="user-nickname"
+                onClick={() => navigate("/profile")}
+                style={{ cursor: "pointer" }}
+              >
+                {nickname}님
+              </p>
+              <button className="logout-btn" onClick={handleLogout}>
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <button className="login-btn" onClick={handleLogin}>
               로그인
             </button>
-            <button
-              className="register-btn"
-              onClick={() => navigate("/register")}
-            >
-              회원가입
-            </button>
-          </>
-        )}
-
-        {user && (
-          <div className="user-info">
-            {user.profileImage ? (
-              <img
-                src={user.profileImage}
-                alt="프로필"
-                className="profile-image"
-              />
-            ) : (
-              <div className="default-profile-circle"></div>
-            )}
-            <p
-              className="user-nickname"
-              style={{ cursor: "pointer" }}
-              onClick={() => navigate("/profile")}
-            >
-              {user.nickname}님
-            </p>
-            <button className="logout-btn" onClick={logout}>
-              로그아웃
-            </button>
-          </div>
-        )}
+          )}
+        </div>
       </header>
 
+      {/* 네비게이션 */}
       <nav>
         <a
           href="#"
           onClick={(e) => {
             e.preventDefault();
-            navigate(user ? "/LoginMain" : "/Main");
+            navigate(isLoggedIn ? "/LoginMain" : "/Main");
           }}
         >
           홈
         </a>
         <div className="dropdown">
-          <a href="MR">리뷰게시판</a>
+          <a href="#">리뷰게시판</a>
           <div className="dropdown-content">
-            <a href="MR">영화 리뷰 게시판</a>
-            <a href="OTTMR">OTT 게시판</a>
-            <a href="FreeBoard">자유 게시판</a>
+            <a href="/MR">영화 리뷰 게시판</a>
+            <a href="/OTTMR">OTT 게시판</a>
+            <a href="/FreeBoard">자유 게시판</a>
           </div>
         </div>
         <div className="dropdown">
-          <a href="/genre">핫 이슈</a>
+          <a href="#">핫 이슈</a>
           <div className="dropdown-content">
-            <a href="#">TOP10 영화</a>
+            <a href="/Top10">TOP10 영화</a>
             <a href="#">영화 뉴스</a>
           </div>
         </div>
         <div className="dropdown">
           <a href="/community">상영 예정작</a>
           <div className="dropdown-content">
-            <a href="#">영화관 상영 예정작</a>
-            <a href="#">OTT 상영 예정작</a>
+            <a href="TheaterComingSoon">영화관 상영 예정작</a>
+            <a href="OTTComingSoon">OTT 상영 예정작</a>
           </div>
         </div>
         <div className="dropdown">
@@ -142,12 +165,11 @@ function OTTMR() {
             <a href="#">메가박스</a>
           </div>
         </div>
-        <a href="CustomerSupport">고객센터</a>
+        <a href="/CustomerSupport">고객센터</a>
       </nav>
 
       {/* 메인 레이아웃 */}
       <div className="main-layout">
-        {/* 사이드바 */}
         <aside className="sidebar">
           <ul>
             <li onClick={() => setCategory("현재 상영 영화 게시판")}>
@@ -160,11 +182,9 @@ function OTTMR() {
           </ul>
         </aside>
 
-        {/* 메인 콘텐츠 */}
         <main className="main-content">
           <div className="board-header">
             <h3>OTT 커뮤니티</h3>
-
             <button
               className="write-button"
               onClick={() => navigate("/CreatePost")}
@@ -183,7 +203,6 @@ function OTTMR() {
             </select>
           </div>
 
-          {/* 게시글 목록 헤더 */}
           <div className="post-list-header">
             <span>포스터</span>
             <span>평균평점</span>
@@ -193,7 +212,6 @@ function OTTMR() {
             <span>조회</span>
           </div>
 
-          {/* 게시글 목록 */}
           <div className="post-list">
             {posts.length === 0 ? (
               <p className="empty-posts">게시글이 없습니다.</p>
@@ -223,7 +241,6 @@ function OTTMR() {
             )}
           </div>
 
-          {/* 페이지네이션 */}
           <div className="pagination">
             <Link to="#">1</Link>
             <Link to="#">2</Link>

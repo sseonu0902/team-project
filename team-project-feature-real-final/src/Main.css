@@ -1,10 +1,7 @@
 body {
   font-family: Arial, sans-serif;
   margin: 0;
-  padding-top: 130px; /* ✅ 수정 */
-  padding-left: 0;
-  padding-right: 0;
-  padding-bottom: 0;
+  padding-top: 180px;
   background-color: #1e1e1e;
   color: #f5f5f5;
 }
@@ -27,9 +24,8 @@ header {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 0px;
-  margin-right: 40px; /* ✅ 변경 */
-  margin-left: auto; /* ✅ 제거 또는 auto로 우측 정렬 */
+  margin-right: 40px;
+  margin-left: auto;
   margin-bottom: 15px;
   z-index: 1001;
 }
@@ -37,17 +33,12 @@ header {
 .search-input {
   padding: 8px;
   width: 350px;
-  margin-right: 0px !important;
   background-color: #1e1e1e;
   color: #f5f5f5;
   border: 1px solid #cdb893;
-  border-right: none; /* ✅ 버튼과 붙이기 위해 제거 */
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
+  border-right: none;
+  border-radius: 5px;
   outline: none;
-  box-sizing: border-box;
 }
 
 .search-button {
@@ -55,14 +46,10 @@ header {
   color: #1e1e1e;
   padding: 8px 12px;
   border: 1px solid #cdb893;
-  border-left: none; /* ✅ input과 겹치는 경계 제거 */
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
   font-size: 14px;
   width: 80px;
   cursor: pointer;
+  border-radius: 5px;
   transition: background-color 0.3s ease-in-out;
 }
 
@@ -75,10 +62,10 @@ header {
   border-radius: 5px !important;
   font-size: 14px !important;
   width: 80px !important;
-  margin-left: -90px !important;
-  bottom: 25px !important;
   transition: background-color 0.3s !important;
   z-index: 900;
+  margin-right: 15px;
+  position: relative;
 }
 
 .logout-btn {
@@ -90,10 +77,23 @@ header {
   border-radius: 5px !important;
   font-size: 14px !important;
   width: 80px !important;
-  margin-right: -20px !important;
-  bottom: 13px !important;
   transition: background-color 0.3s !important;
   z-index: 900;
+  order: -1;
+  margin-left: auto;
+  margin-bottom: -1px !important;
+  position: relative;
+}
+
+/* ✅ 공통 hover 효과 */
+.search-button:hover,
+.login-btn:hover,
+.logout-btn:hover,
+.carousel-button:hover,
+.carousel-nav button:hover {
+  background-color: #bfa77a !important;
+  color: #1e1e1e !important;
+  transition: background-color 0.3s ease-in-out;
 }
 
 nav {
@@ -115,8 +115,9 @@ nav a {
   padding: 10px 15px;
 }
 
-nav a:hover {
-  background-color: #3a3a3a !important;
+nav a:hover,
+.dropdown-content a:hover {
+  background-color: #3a3a3a;
 }
 
 .dropdown-content {
@@ -127,59 +128,51 @@ nav a:hover {
   color: #f5f5f5;
 }
 
-.dropdown-content a:hover {
-  background-color: #3a3a3a;
-}
-
+/* ✅ 히어로 이미지 영역 */
 .hero-section {
-  background-color: #1e1e1e;
-  height: 400px;
   position: relative;
+  height: 450px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0;
+  transition: background-image 1s ease-in-out;
 }
 
 .hero-overlay {
-  background-color: rgba(0, 0, 0, 0.4);
-  height: 100%;
-  color: #f5f5f5;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 40px 60px;
+  border-radius: 12px;
   text-align: center;
 }
 
 .hero-title {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 10px;
 }
 
 .hero-subtitle {
-  font-size: 16px;
-  margin: 10px 0;
+  font-size: 18px;
+  color: #f0f0f0;
 }
 
-.hero-button {
-  background-color: #cdb893;
-  border: none;
-  padding: 10px 20px;
-  color: #1e1e1e;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 16px;
-}
-
+/* ✅ 캐러셀 영역 */
 .carousel-nav {
   display: flex;
-  flex-direction: row;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 8px;
   margin: 0 auto;
   padding: 10px;
   background-color: #2e2e2e;
-  position: sticky;
-  top: 150px;
-  z-index: 999;
-  flex-wrap: wrap;
+  position: relative;
+  top: auto;
+  z-index: 1;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
@@ -194,8 +187,6 @@ nav a:hover {
   color: #1e1e1e;
   border-radius: 4px;
   cursor: pointer;
-  text-align: center;
-  text-decoration: none;
 }
 
 .carousel-nav button.active {
@@ -228,30 +219,33 @@ nav a:hover {
 .carousel-track {
   display: flex;
   transition: transform 0.5s ease-in-out;
-  padding-right: 150px;
-  width: 300%; /* ✅ 내용물만큼 너비 설정 */
+  padding-right: 200px;
+  width: 500%;
   gap: 0.3px;
 }
 
 .movie-card {
   box-sizing: border-box;
-  flex: 0 0 50%;       /* 고정 너비 */
-  max-width: 50%;      /* 최대 너비도 동일하게 */
-  padding: 0px;          /* padding 제거해서 이미지 꽉 차게 */
-  margin: 10px;          /* 카드 간격 주기 */
+  flex: 0 0 50%;
+  max-width: 100%;
+  padding: 0px;
+  margin: 10px;
   background: #2a2a2a;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   text-align: center;
   border-radius: 8px;
   color: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .movie-card img {
-  width: 100%;       /* 카드 너비에 맞춤 */
-  height: auto;      /* 비율 유지 */
-  max-height: 500px; /* 이미지의 최대 높이를 제한 */
-  object-fit: cover; /* 이미지 잘림 방지 및 균형 유지 */
-  border-radius: 10px; /* 둥근 테두리 (선택사항) */
+  width: 100%;
+  height: 350px;
+  max-height: 800px;
+  object-fit: contain;
+  border-radius: 8px;
 }
 
 .carousel-button {
@@ -264,7 +258,7 @@ nav a:hover {
   padding: 10px;
   cursor: pointer;
   width: 40px;
-  z-index: 1001;
+  z-index: 500;
 }
 
 .prev {
@@ -321,7 +315,7 @@ footer {
   color: #f5f5f5;
   cursor: pointer;
   margin-right: 90px;
-  margin-bottom: 30px;
+  margin-top: -5px;
   transition: color 0.3s;
 }
 
@@ -332,36 +326,18 @@ footer {
 .user-info {
   display: flex;
   align-items: center;
-  position: absolute;
-  top: 0px;
-  margin-right: 3px;
+  justify-content: flex-end;
   gap: 10px;
-  z-index: 1001;
+  margin-right: 19px;
+  margin-top: 20px;
+  white-space: nowrap; /* ✅ 닉네임 옆에 버튼 등이 줄바꿈되지 않게 */
 }
 
-.profile-image,
-.default-profile-circle {
+.preview-image {
   width: 36px;
   height: 36px;
   border-radius: 50%;
   object-fit: cover;
   margin-right: 8px;
-  margin-bottom: 10px;
-}
-
-.default-profile-circle {
-  background-color: #888;
-  display: inline-block;
-}
-
-/* ✅ 버튼 공통 hover 효과 적용 */
-.search-button:hover,
-.login-btn:hover,
-.logout-btn:hover,
-.hero-button:hover,
-.carousel-button:hover,
-.carousel-nav button:hover {
-  background-color: #bfa77a !important;
-  color: #1e1e1e !important;
-  transition: background-color 0.3s ease-in-out;
+  margin-top: -15px;
 }

@@ -126,15 +126,11 @@ const CreatePost = () => {
         </div>
         {isLoggedIn && nickname && (
           <div className="user-info">
-            {user?.profileImage ? (
-              <img
-                src={user.profileImage}
-                alt="프로필"
-                className="profile-image"
-              />
-            ) : (
-              <div className="default-profile-circle"></div>
-            )}
+            <img
+              src={user?.profileImage || "/images/BasicProfile.png"}
+              alt="프로필"
+              className="preview-image"
+            />
             <p
               className="user-nickname"
               style={{ cursor: "pointer" }}
@@ -168,17 +164,17 @@ const CreatePost = () => {
           </div>
         </div>
         <div className="dropdown">
-          <a href="/genre">핫 이슈</a>
+          <a href="#">핫 이슈</a>
           <div className="dropdown-content">
-            <a href="#">TOP10 영화</a>
+            <a href="/Top10">TOP10 영화</a>
             <a href="#">영화 뉴스</a>
           </div>
         </div>
         <div className="dropdown">
           <a href="/community">상영 예정작</a>
           <div className="dropdown-content">
-            <a href="#">영화관 상영 예정작</a>
-            <a href="#">OTT 상영 예정작</a>
+            <a href="TheaterComingSoon">영화관 상영 예정작</a>
+            <a href="OTTComingSoon  ">OTT 상영 예정작</a>
           </div>
         </div>
         <div className="dropdown">

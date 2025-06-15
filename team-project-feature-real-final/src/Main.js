@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./Main.css";
 
 function Main() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [nickname, setNickname] = useState("");
+  const [profileImage, setProfileImage] = useState(null);
   const [activeSection, setActiveSection] = useState("popular");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [movies, setMovies] = useState([]);
@@ -12,93 +14,47 @@ function Main() {
   const totalCards = 10;
   const visibleCount = 2;
   const cardWidthPercent = 100 / totalCards;
+
+  const heroImages = [
+    "/images/alex-avalos-dnUNjIUCg5c-unsplash.jpg",
+    "/images/daniel-k-cheung-i5Lmb7qPR7s-unsplash.jpg",
+    "/images/geoffrey-moffett-TFRezw7pQwI-unsplash.jpg",
+    "/images/anika-de-klerk-dWYjy9zIiF8-unsplash.jpg",
+    "/images/felix-mooneeram-evlkOfkQ5rE-unsplash.jpg",
+  ];
+  const [heroIndex, setHeroIndex] = useState(0);
+
   const fetchMoviesByCategory = async (category) => {
     let url = "";
-  
+
     switch (category) {
-      case "popular": // 인기 TOP10
+      case "popular":
         url = `https://api.themoviedb.org/3/movie/popular?api_key=6cf75faf0d9e5849e3c6650632ae6ff5&language=ko-KR&region=KR&page=1`;
         break;
-  
-      case "recommend": // 추천 수 TOP10 (평점 높은 영화)
+      case "recommend":
         url = `https://api.themoviedb.org/3/movie/top_rated?api_key=6cf75faf0d9e5849e3c6650632ae6ff5&language=ko-KR&region=KR&page=1`;
         break;
-  
-      case "rising": // 급 상승 TOP10 (지금 상영 중인 영화)
+      case "rising":
         url = `https://api.themoviedb.org/3/movie/now_playing?api_key=6cf75faf0d9e5849e3c6650632ae6ff5&language=ko-KR&region=KR&page=1`;
         break;
-  
-      case "falling": // 급 하락 TOP10 (임시: 인기 영화 10페이지, 인기 낮은 편 가정)
+      case "falling":
         url = `https://api.themoviedb.org/3/movie/popular?api_key=6cf75faf0d9e5849e3c6650632ae6ff5&language=ko-KR&region=KR&page=10`;
         break;
-  
-      case "ott": // OTT 인기 TOP10 (임시로 popular 2페이지 데이터)
+      case "ott":
         url = `https://api.themoviedb.org/3/movie/popular?api_key=6cf75faf0d9e5849e3c6650632ae6ff5&language=ko-KR&region=KR&page=2`;
         break;
-  
       default:
         url = `https://api.themoviedb.org/3/movie/popular?api_key=6cf75faf0d9e5849e3c6650632ae6ff5&language=ko-KR&region=KR&page=1`;
-        break;
     }
-  
+
     try {
       const response = await fetch(url);
       const data = await response.json();
-      // 영화 리스트 중 상위 10개만 반환
       return data.results.slice(0, 10);
     } catch (error) {
       console.error("API 호출 오류:", error);
       return [];
     }
-  };
-
-  const onCategoryClick = async (categoryId) => {
-    setActiveSection(categoryId);
-    setCurrentIndex(0);
-
-    const moviesData = await fetchMoviesByCategory(categoryId);
-    setMovies(moviesData);
-  };
-
-  useEffect(() => {
-    setIsLoggedIn(localStorage.getItem("isLoggedIn") === "true");
-    const loadInitialMovies = async () => {
-      const initialMovies = await fetchMoviesByCategory("popular");
-      setMovies(initialMovies);
-    };
-    const fetchKoreanPopularMovies = async () => {
-      try {
-        const response = await fetch(
-          `https://api.themoviedb.org/3/movie/popular?api_key=6cf75faf0d9e5849e3c6650632ae6ff5&language=ko-KR&region=KR&page=1`
-        );
-        const data = await response.json();
-        console.log("TMDB API data.results:", data.results);
-        const top10 = data.results.slice(0, 10);
-        setMovies(top10);
-      } catch (error) {
-        console.error("TMDB API 호출 오류:", error);
-      }
-    };
-  
-    fetchKoreanPopularMovies();
-    loadInitialMovies();
-  }, []);
-
-  const nextSlide = () => {
-    const newIndex = (currentIndex + visibleCount) % totalCards;
-    setCurrentIndex(newIndex);
-  };
-
-  const prevSlide = () => {
-    const newIndex = (currentIndex - visibleCount + totalCards) % totalCards;
-    setCurrentIndex(newIndex);
-  };
-
-  const scrollToSection = async (id) => {
-    setActiveSection(id);
-    setCurrentIndex(0);
-    const newMovies = await fetchMoviesByCategory(id);
-    setMovies(newMovies);
   };
 
   const categoryList = [
@@ -109,65 +65,124 @@ function Main() {
     { id: "ott", label: "OTT 인기 TOP10" },
   ];
 
+  useEffect(() => {
+    const loginStatus = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(loginStatus);
+
+    const loadInitialMovies = async () => {
+      const initialMovies = await fetchMoviesByCategory("popular");
+      setMovies(initialMovies);
+    };
+    loadInitialMovies();
+
+    if (loginStatus) {
+      const storedUser = localStorage.getItem("user");
+      if (storedUser) {
+        try {
+          const userData = JSON.parse(storedUser);
+          if (userData?.nickname) setNickname(userData.nickname);
+          if (userData?.profileImage) setProfileImage(userData.profileImage);
+        } catch (e) {
+          console.warn("⚠ JSON 파싱 실패:", e);
+        }
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    heroImages.forEach((src) => {
+      const img = new Image();
+      img.src = src;
+    });
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroIndex((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("isLoggedIn");
+    setIsLoggedIn(false);
+    setNickname("");
+    navigate("/main");
+  };
+
+  const scrollToSection = async (id) => {
+    setActiveSection(id);
+    setCurrentIndex(0);
+    const newMovies = await fetchMoviesByCategory(id);
+    setMovies(newMovies);
+  };
+
+  const nextSlide = () => {
+    const maxIndex = totalCards - visibleCount;
+    setCurrentIndex(currentIndex >= maxIndex ? 0 : currentIndex + visibleCount);
+  };
+
+  const prevSlide = () => {
+    const maxIndex = totalCards - visibleCount;
+    setCurrentIndex(currentIndex <= 0 ? maxIndex : currentIndex - visibleCount);
+  };
+
   return (
     <div>
       <header>
-        <div className="header-left">
-          <h1 style={{ margin: 0 }}>MRS</h1>
-        </div>
-
+        <h1>MRS</h1>
         <div className="search-container">
-          <input
-            type="text"
-            class="search-input"
-            placeholder="검색어를 입력하세요."
-          />
-          <button class="search-button">검색</button>
+          <input className="search-input" placeholder="검색어를 입력하세요." />
+          <button className="search-button">검색</button>
         </div>
-
-        <div className="header-right">
-          {!isLoggedIn && (
-            <button className="login-btn" onClick={() => navigate("/login")}>
-              로그인
+        {isLoggedIn && nickname ? (
+          <div className="user-info">
+            <img
+              src={profileImage || "/images/BasicProfile.png"}
+              alt="프로필"
+              className="profile-image"
+            />
+            <p className="user-nickname" onClick={() => navigate("/profile")}>
+              {nickname}님
+            </p>
+            <button className="login-btn" onClick={handleLogout}>
+              로그아웃
             </button>
-          )}
-        </div>
+          </div>
+        ) : (
+          <button className="login-btn" onClick={() => navigate("/login")}>
+            로그인
+          </button>
+        )}
       </header>
 
       <nav>
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate(isLoggedIn ? "/LoginMain" : "/Main");
-          }}
-        >
-          홈
-        </a>
+        <Link to="/main">홈</Link>
         <div className="dropdown">
-          <a href="MR">리뷰게시판</a>
+          <a href="#">리뷰게시판</a>
           <div className="dropdown-content">
-            <a href="MR">영화 리뷰 게시판</a>
-            <a href="OTTMR">OTT 게시판</a>
-            <a href="FreeBoard">자유 게시판</a>
+            <Link to="/MR">영화 리뷰 게시판</Link>
+            <Link to="/OTTMR">OTT 게시판</Link>
+            <Link to="/FreeBoard">자유 게시판</Link>
           </div>
         </div>
         <div className="dropdown">
-          <a href="/genre">핫 이슈</a>
+          <a href="#">핫 이슈</a>
           <div className="dropdown-content">
-            <a href="#">TOP10 영화</a>
+            <a href="/Top10">TOP10 영화</a>
             <a href="#">영화 뉴스</a>
           </div>
         </div>
         <div className="dropdown">
-          <a href="/community">상영 예정작</a>
+          <a href="#">상영 예정작</a>
           <div className="dropdown-content">
-            <a href="#">영화관 상영 예정작</a>
-            <a href="#">OTT 상영 예정작</a>
+            <Link to="/TheaterComingSoon">영화관 상영 예정작</Link>
+            <Link to="/OTTComingSoon">OTT 상영 예정작</Link>
           </div>
         </div>
         <div className="dropdown">
-          <a href="/profile">OTT관</a>
+          <a href="#">OTT관</a>
           <div className="dropdown-content">
             <a href="#">넷플릭스</a>
             <a href="#">티빙</a>
@@ -178,39 +193,20 @@ function Main() {
           </div>
         </div>
         <div className="dropdown">
-          <a href="/contact">영화관</a>
+          <a href="#">영화관</a>
           <div className="dropdown-content">
             <a href="#">CGV</a>
             <a href="#">롯데시네마</a>
             <a href="#">메가박스</a>
           </div>
         </div>
-        <a
-          href="#"
-          onClick={(e) => {
-            e.preventDefault();
-            if (isLoggedIn) {
-              navigate("/support");
-            } else {
-              alert("로그인 후 이용할 수 있습니다.");
-              navigate("/login");
-            }
-          }}
-        >
-          고객센터
-        </a>
+        <Link to="/CustomerSupport">고객센터</Link>
       </nav>
 
-      <div className="hero-section">
-        <div className="hero-overlay">
-          <h2 className="hero-title">Explore the World of Cinema</h2>
-          <p className="hero-subtitle">
-            Discover your next favorite movie. Personalized recommendations
-            await.
-          </p>
-          <button className="hero-button">🎬 View Featured Movie</button>
-        </div>
-      </div>
+      <div
+        className="hero-section"
+        style={{ backgroundImage: `url(${heroImages[heroIndex]})` }}
+      ></div>
 
       <div className="carousel-nav">
         {categoryList.map((cat) => (
@@ -240,28 +236,28 @@ function Main() {
                 transition: "transform 0.5s ease-in-out",
               }}
             >
-              {movies.map((movie, index) => (
+              {[...Array(totalCards)].map((_, index) => (
                 <div
                   className="movie-card"
-                  key={movie.id || index}
+                  key={index}
                   style={{
                     flex: `0 0 ${cardWidthPercent}%`,
                     maxWidth: `${cardWidthPercent}%`,
-                    padding: "0 5px",
                   }}
                 >
                   <img
-              src={
-                movie.poster_path
-                  ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-                  : `movie${index + 1}.jpg`
-              }
-              alt={movie.title || movie.original_title}
-              style={{ width: "100%", borderRadius: "8px" }}
-            />
-                    <p style={{ textAlign: "center", marginTop: "8px" }}>
-              {movie.title || movie.original_title}
-            </p>
+                    src={
+                      movies[index]?.poster_path
+                        ? `https://image.tmdb.org/t/p/w500${movies[index].poster_path}`
+                        : `movie${index + 1}.jpg`
+                    }
+                    alt={movies[index]?.title || `영화 ${index + 1}`}
+                  />
+                  <p>
+                    {movies[index]?.title ||
+                      movies[index]?.original_title ||
+                      "로딩 중..."}
+                  </p>
                 </div>
               ))}
             </div>

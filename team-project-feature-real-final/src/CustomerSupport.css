@@ -37,13 +37,13 @@ body {
   z-index: 999;
 }
 
-.customer-support .container {
+.custom-container {
   padding: 160px 20px 20px;
   display: flex;
   flex-direction: column;
   gap: 40px;
   max-width: 1200px;
-  margin: 0 auto;
+  margin-top: -200px;
 }
 
 .customer-support .search-container {
@@ -74,10 +74,26 @@ body {
   gap: 10px;
 }
 
+.customer-support .login-btn {
+  padding: 8px 12px;
+  background-color: #cdb893;
+  color: #1e1e1e;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.customer-support .login-btn:hover {
+  background-color: #bfa77a;
+  color: #1e1e1e !important;
+  transition: background-color 0.3s ease-in-out;
+}
+
 .customer-support .logout-btn {
   padding: 8px 12px;
-  background-color: #e74c3c;
-  color: white;
+  background-color: #cdb893;
+  color: #1e1e1e;
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -85,7 +101,9 @@ body {
 }
 
 .customer-support .logout-btn:hover {
-  background-color: #c0392b;
+  background-color: #bfa77a;
+  color: #1e1e1e !important;
+  transition: background-color 0.3s ease-in-out;
 }
 
 .customer-support .user-nickname {
@@ -224,13 +242,17 @@ body {
   margin-top: 10px;
 }
 
-.customer-support input,
-.customer-support textarea {
+/* ✅ 고정 너비 설정 */
+.customer-support form input[type="text"],
+.customer-support form input[type="email"],
+.customer-support form textarea {
+  width: 600px !important;
   padding: 10px;
   margin-top: 5px;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 15px;
+  box-sizing: border-box;
 }
 
 .customer-support textarea {
@@ -238,7 +260,6 @@ body {
   height: 180px;
 }
 
-/* ✅ 문의 보내기 버튼 (form 내 button에 정확히 적용) */
 .customer-support form button {
   margin-top: 20px;
   padding: 14px;
@@ -254,4 +275,19 @@ body {
 .customer-support form button:hover {
   background-color: #bfa77a !important;
   color: #1e1e1e !important;
+}
+
+.customer-support-card {
+  background-color: #f4f4f4;
+  width: 1000px;
+  height: 950px;
+  margin-top: -20px;
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
 }

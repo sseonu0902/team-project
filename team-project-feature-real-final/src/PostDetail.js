@@ -25,6 +25,34 @@ function PostDetail() {
   const [newComment, setNewComment] = useState("");
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [nickname, setNickname] = useState("");
+  const [profileImage, setProfileImage] = useState(null);
+
+  useEffect(() => {
+    const loginStatus = localStorage.getItem("isLoggedIn") === "true";
+    setIsLoggedIn(loginStatus);
+
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      try {
+        const userData = JSON.parse(storedUser);
+        if (userData?.nickname) setNickname(userData.nickname);
+        if (userData?.profileImage) setProfileImage(userData.profileImage);
+      } catch (e) {
+        console.warn("⚠ 사용자 정보 파싱 실패:", e);
+      }
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.setItem("isLoggedIn", "false");
+    setIsLoggedIn(false);
+    setNickname("");
+    logout();
+    navigate("/Main");
+  };
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -134,85 +162,87 @@ function PostDetail() {
       <header>
         <h1>MRS</h1>
         <div className="search-container">
-          <input className="search-input" placeholder="검색어를 입력하세요." />
+          <input
+            type="text"
+            className="search-input"
+            placeholder="검색어를 입력하세요."
+          />
           <button className="search-button">검색</button>
         </div>
-        {!user ? (
-          <>
-            <button className="login-btn" onClick={() => navigate("/login")}>
-              로그인
-            </button>
-            <button
-              className="register-btn"
-              onClick={() => navigate("/register")}
-            >
-              회원가입
-            </button>
-          </>
-        ) : (
+
+        {isLoggedIn && nickname && (
           <div className="user-info">
-            {user.profileImage ? (
-              <img
-                src={user.profileImage}
-                alt="프로필"
-                className="profile-image"
-              />
-            ) : (
-              <div className="default-profile-circle"></div>
-            )}
-            <p className="user-nickname" onClick={() => navigate("/profile")}>
-              {user.nickname}님
+            <img
+              src={profileImage || "/images/BasicProfile.png"}
+              alt="프로필"
+              className="preview-image"
+            />
+            <p
+              className="user-nickname"
+              onClick={() => navigate("/profile")}
+              style={{ cursor: "pointer" }}
+            >
+              {nickname}님
             </p>
-            <button className="logout-btn" onClick={logout}>
+            <button className="logout-btn" onClick={handleLogout}>
               로그아웃
             </button>
           </div>
         )}
       </header>
+
       <nav>
-        <Link to={user ? "/LoginMain" : "/Main"}>홈</Link>
+        <a
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(isLoggedIn ? "/LoginMain" : "/Main");
+          }}
+        >
+          홈
+        </a>
         <div className="dropdown">
-          <Link to="/MR">리뷰게시판</Link>
+          <a href="#">리뷰게시판</a>
           <div className="dropdown-content">
-            <Link to="/MR">영화 리뷰 게시판</Link>
-            <Link to="/OTTMR">OTT 게시판</Link>
-            <Link to="/FreeBoard">자유 게시판</Link>
+            <a href="/MR">영화 리뷰 게시판</a>
+            <a href="/OTTMR">OTT 게시판</a>
+            <a href="/FreeBoard">자유 게시판</a>
           </div>
         </div>
         <div className="dropdown">
-          <Link to="/genre">핫 이슈</Link>
+          <a href="#">핫 이슈</a>
           <div className="dropdown-content">
-            <Link to="#">TOP10 영화</Link>
-            <Link to="#">영화 뉴스</Link>
+            <a href="/Top10">TOP10 영화</a>
+            <a href="#">영화 뉴스</a>
           </div>
         </div>
         <div className="dropdown">
-          <Link to="/community">상영 예정작</Link>
+          <a href="/community">상영 예정작</a>
           <div className="dropdown-content">
-            <Link to="#">영화관 상영 예정작</Link>
-            <Link to="#">OTT 상영 예정작</Link>
+            <a href="TheaterComingSoon">영화관 상영 예정작</a>
+            <a href="OTTComingSoon">OTT 상영 예정작</a>
           </div>
         </div>
         <div className="dropdown">
-          <Link to="/profile">OTT관</Link>
+          <a href="/profile">OTT관</a>
           <div className="dropdown-content">
-            <Link to="#">넷플릭스</Link>
-            <Link to="#">티빙</Link>
-            <Link to="#">왓챠</Link>
-            <Link to="#">쿠팡플레이</Link>
-            <Link to="#">웨이브</Link>
-            <Link to="#">라프텔</Link>
+            <a href="#">넷플릭스</a>
+            <a href="#">티빙</a>
+            <a href="#">왓챠</a>
+            <a href="#">쿠팡플레이</a>
+            <a href="#">웨이브</a>
+            <a href="#">라프텔</a>
           </div>
         </div>
         <div className="dropdown">
-          <Link to="/contact">영화관</Link>
+          <a href="/contact">영화관</a>
           <div className="dropdown-content">
-            <Link to="#">CGV</Link>
-            <Link to="#">롯데시네마</Link>
-            <Link to="#">메가박스</Link>
+            <a href="#">CGV</a>
+            <a href="#">롯데시네마</a>
+            <a href="#">메가박스</a>
           </div>
         </div>
-        <Link to="CustomerSupport">고객센터</Link>
+        <a href="/CustomerSupport">고객센터</a>
       </nav>
 
       <div className="main-layout">

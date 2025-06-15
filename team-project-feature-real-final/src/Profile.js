@@ -1,10 +1,10 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import "./EditProfile.css";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { UserContext } from "./UserContext";
+import { useNavigate } from "react-router-dom";
+import "./Profile.css";
+import axios from "axios";
 
-function EditProfile() {
+function Profile() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
@@ -17,7 +17,6 @@ function EditProfile() {
   const [age, setAge] = useState(25);
   const [gender, setGender] = useState("남성");
   const { user, logout } = useContext(UserContext);
-  const [originalNickname, setOriginalNickname] = useState("");
 
   useEffect(() => {
     const loginStatus = localStorage.getItem("isLoggedIn") === "true";
@@ -28,7 +27,6 @@ function EditProfile() {
       if (storedUser) {
         const userData = JSON.parse(storedUser);
         if (userData.nickname) {
-          setOriginalNickname(userData.nickname);
           setNickname(userData.nickname);
           setEmail(userData.email || "john.doe@example.com");
           if (userData.age) setAge(userData.age);
@@ -45,8 +43,6 @@ function EditProfile() {
               console.error("유저 포인트 조회 실패:", err);
             });
         }
-        if (userData.age) setAge(userData.age);
-        if (userData.gender) setGender(userData.gender);
         fetchUserProfile(userData.email);
       }
     }
@@ -60,36 +56,6 @@ function EditProfile() {
       setMileage(userData.mileage);
     } catch (error) {
       console.error("Error fetching user profile:", error);
-    }
-  };
-
-  const handleSave = async () => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    if (!storedUser || !storedUser.user_id) {
-      alert("로그인 정보를 불러올 수 없습니다.");
-      return;
-    }
-
-    try {
-      await axios.put(
-        `http://localhost:4000/api/user/${storedUser.user_id}/profile`,
-        {
-          nickname,
-          age,
-          gender,
-        }
-      );
-
-      alert("프로필이 수정되었습니다. 다시 로그인해주세요.");
-      localStorage.removeItem("user");
-      localStorage.setItem("isLoggedIn", "false");
-      navigate("/login");
-    } catch (err) {
-      console.error("프로필 저장 오류:", err);
-      alert(
-        "프로필 저장 실패: " +
-          (err.response?.data?.message || "알 수 없는 오류")
-      );
     }
   };
 
@@ -115,15 +81,16 @@ function EditProfile() {
     const levels = [...Array(40)].map((_, i) => ({
       level: i + 1,
       point:
-        100 +
-        (i < 10
-          ? i * 100
-          : i - 10 < 10
+        i < 10
+          ? 100 + i * 100
+          : i < 20
           ? 1000 + (i - 10) * 100
-          : 3000 + (i - 20) * 100),
+          : 3000 + (i - 20) * 100,
     }));
+
     let currentLevel = 1;
     let nextLevelPoint = 100;
+
     for (let i = 0; i < levels.length; i++) {
       if (point < levels[i].point) {
         currentLevel = levels[i].level - 1;
@@ -131,11 +98,13 @@ function EditProfile() {
         break;
       }
     }
+
     let title = "";
     if (currentLevel <= 10) title = "🎬 초보 관람객";
     else if (currentLevel <= 20) title = "🍿 시사회 출입자";
     else if (currentLevel <= 30) title = "🎥 영화 평론가";
     else title = "🧠 해석 장인";
+
     return { currentLevel, nextLevelPoint, title };
   };
 
@@ -154,29 +123,19 @@ function EditProfile() {
           />
           <button className="search-button">검색</button>
         </div>
-        {isLoggedIn && originalNickname && (
+        {isLoggedIn && nickname && (
           <div className="user-info">
-            {profileImage ? (
-              <img
-                src={profileImage}
-                alt="프로필"
-                className="profile-image"
-                style={{
-                  width: 36,
-                  height: 36,
-                  borderRadius: "50%",
-                  objectFit: "cover",
-                }}
-              />
-            ) : (
-              <div className="default-profile-circle"></div>
-            )}
+            <img
+              src={profileImage || "/images/BasicProfile.png"}
+              alt="프로필"
+              className="preview-image"
+            />
             <p
               className="user-nickname"
               style={{ cursor: "pointer" }}
               onClick={() => navigate("/profile")}
             >
-              {originalNickname}님
+              {nickname}님
             </p>
             <button className="logout-btn" onClick={handleLogout}>
               로그아웃
@@ -204,17 +163,17 @@ function EditProfile() {
           </div>
         </div>
         <div className="dropdown">
-          <a href="/genre">핫 이슈</a>
+          <a href="#">핫 이슈</a>
           <div className="dropdown-content">
-            <a href="#">TOP10 영화</a>
+            <a href="/Top10">TOP10 영화</a>
             <a href="#">영화 뉴스</a>
           </div>
         </div>
         <div className="dropdown">
           <a href="/community">상영 예정작</a>
           <div className="dropdown-content">
-            <a href="#">영화관 상영 예정작</a>
-            <a href="#">OTT 상영 예정작</a>
+            <a href="TheaterComingSoon">영화관 상영 예정작</a>
+            <a href="OTTComingSoon">OTT 상영 예정작</a>
           </div>
         </div>
         <div className="dropdown">
@@ -242,11 +201,11 @@ function EditProfile() {
       <div className="profile-card">
         <div className="profile-image">
           <div className="circle" onClick={handleImageClick}>
-            {profileImage ? (
-              <img src={profileImage} alt="프로필" className="preview-image" />
-            ) : (
-              "프로필 사진"
-            )}
+            <img
+              src={profileImage || "/images/BasicProfile.png"}
+              alt="프로필"
+              className="proflie-image"
+            />
           </div>
           <input
             type="file"
@@ -258,18 +217,12 @@ function EditProfile() {
         </div>
 
         <div className="profile-info">
-          <label>
-            <strong>닉네임:</strong>
-          </label>
-          <input
-            value={nickname}
-            onChange={(e) => setNickname(e.target.value)}
-          />
-
+          <h3>
+            <strong>이름:</strong> {nickname || "John Doe"}
+          </h3>
           <p>
             <strong>이메일:</strong> {email}
           </p>
-
           <p>
             <strong>포인트:</strong> {point} / {nextLevelPoint}
           </p>
@@ -283,33 +236,37 @@ function EditProfile() {
             ></div>
           </div>
           <p style={{ fontSize: "0.8rem" }}>{progress.toFixed(1)}% 진행중</p>
-
           <p>
             <strong>마일리지:</strong> {mileage}
           </p>
+          <p>
+            <strong>나이:</strong> {age}
+          </p>
+          <p>
+            <strong>성별:</strong> {gender}
+          </p>
+        </div>
 
-          <label>
-            <strong>나이:</strong>
-          </label>
-          <input
-            type="number"
-            value={age}
-            onChange={(e) => setAge(Number(e.target.value))}
-          />
-
-          <label>
-            <strong>성별:</strong>
-          </label>
-          <select value={gender} onChange={(e) => setGender(e.target.value)}>
-            <option value="남성">남성</option>
-            <option value="여성">여성</option>
-          </select>
-
-          <button onClick={handleSave}>저장</button>
+        <div className="button-group">
+          <button
+            className="profile-btn"
+            onClick={() => navigate("/update-profile")}
+          >
+            프로필 수정
+          </button>
+          <button
+            className="profile-btn"
+            onClick={() => navigate("/MileageHistory")}
+          >
+            마일리지 내역
+          </button>
+          <button className="profile-btn" onClick={() => navigate("/PostUser")}>
+            게시물 관리
+          </button>
         </div>
       </div>
     </div>
   );
 }
 
-export default EditProfile;
+export default Profile;
