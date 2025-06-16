@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { UserContext } from "./UserContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams} from "react-router-dom";
 import { FaStar } from "react-icons/fa";
 import axios from "axios";
 import "./CreatePost.css";
@@ -33,6 +33,7 @@ const StarRating = ({ rating, setRating }) => (
 const CreatePost = () => {
   const { user } = useContext(UserContext);
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const [category, setCategory] = useState(categories[1]);
   const [title, setTitle] = useState("");
@@ -45,15 +46,46 @@ const CreatePost = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const loggedIn = localStorage.getItem("isLoggedIn") === "true";
-    setIsLoggedIn(loggedIn);
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      const parsed = JSON.parse(storedUser);
-      if (parsed.nickname) setNickname(parsed.nickname);
+  const loginStatus = localStorage.getItem("isLoggedIn") === "true";
+  setIsLoggedIn(loginStatus);
+
+  const storedUser = localStorage.getItem("user");
+  if (storedUser) {
+    try {
+      const userData = JSON.parse(storedUser);
+      if (userData?.nickname) setNickname(userData.nickname);
+    } catch (e) {
+      console.warn("사용자 정보 파싱 실패:", e);
     }
-    if (!loggedIn) navigate("/login");
-  }, [navigate]);
+  }
+
+  if (!loginStatus) {
+    navigate("/login");
+    return;
+  }
+
+  // 수정 모드일 경우: 기존 게시물 데이터 불러오기
+  if (id) {
+    axios.get(`http://localhost:4000/api/review/${id}`)
+      .then((res) => {
+        const post = res.data;
+        setCategory(post.category || categories[0]);
+        setTitle(post.title || "");
+        setContent(post.content || "");
+        setImage(post.image || null);
+        setRatings(
+          (post.ratings || []).map(r => ({
+            aspect: r.aspect,
+            score: r.score
+          }))
+        );
+      })
+      .catch((err) => {
+        console.error("게시글 불러오기 실패:", err);
+        alert("게시글 데이터를 불러오지 못했습니다.");
+      });
+  }
+}, [navigate, id]);
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -88,33 +120,31 @@ const CreatePost = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    const avgRating =
-      ratings.reduce((sum, r) => sum + r.score, 0) / ratings.length;
-
-    const newPost = {
-      movie_id: null,
-      nickname: user.nickname,
-      category,
-      title,
-      content,
-      image,
-      rating: parseFloat(avgRating.toFixed(1)),
-      ratings: ratings.map((r) => ({
-        rating_type_id: ratingTypeMap[r.aspect],
-        score: r.score,
-      })),
-    };
-
-    try {
-      await axios.post("http://localhost:4000/api/review", newPost);
-      alert("리뷰가 성공적으로 등록되었습니다.");
-      navigate("/MR");
-    } catch (error) {
-      console.error("등록 실패:", error);
-      alert("리뷰 등록에 실패했습니다.");
-    }
+  e.preventDefault();
+  const avg = ratings.reduce((a, b) => a + b.score, 0) / ratings.length;
+  const payload = {
+    nickname: nickname,
+    title,
+    content,
+    category,
+    image,
+    rating: avg,
+    ratings: ratings.map(r => ({
+      rating_type_id: ratingTypeMap[r.aspect],
+      score: r.score,
+    })),
   };
+
+  if (id) {
+    await axios.put(`http://localhost:4000/api/review/${id}`, payload);
+    alert("수정 완료");
+  } else {
+    await axios.post(`http://localhost:4000/api/review`, payload);
+    alert("작성 완료");
+  }
+  navigate("/MR");
+};
+
 
   return (
     <div>
@@ -164,9 +194,9 @@ const CreatePost = () => {
           </div>
         </div>
         <div className="dropdown">
-          <a href="#">핫 이슈</a>
+          <a href="/genre">핫 이슈</a>
           <div className="dropdown-content">
-            <a href="/Top10">TOP10 영화</a>
+            <a href="#">TOP10 영화</a>
             <a href="#">영화 뉴스</a>
           </div>
         </div>

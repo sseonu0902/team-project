@@ -1,33 +1,52 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./MileageHistory.css";
+import "./PostUser.css";
+import { setupPostUserLogic } from "./postUserLogic";
 
-function MileageHistory() {
+function PostUser() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickname] = useState("");
   const [profileImage, setProfileImage] = useState(null);
+  const [posts, setPosts] = useState([]); // 🔹 게시물 목록
 
   useEffect(() => {
+    setupPostUserLogic();
     const loginStatus = localStorage.getItem("isLoggedIn") === "true";
     setIsLoggedIn(loginStatus);
-
-    if (!loginStatus) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
-    }
-
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       try {
         const userData = JSON.parse(storedUser);
         if (userData?.nickname) setNickname(userData.nickname);
         if (userData?.profileImage) setProfileImage(userData.profileImage);
+
+        // 🔹 게시물 불러오기
+        fetch(`http://localhost:4000/api/review/user/${userData.user_id}`)
+          .then((res) => res.json())
+          .then((data) => setPosts(data))
+          .catch((err) => console.error("게시물 불러오기 실패:", err));
       } catch (e) {
         console.warn("⚠ 사용자 정보 파싱 실패:", e);
       }
     }
-  }, [navigate]);
+  }, []);
+
+  const handleDelete = async (reviewId) => {
+  if (!window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) return;
+
+  try {
+    await fetch(`http://localhost:4000/api/review/${reviewId}`, {
+      method: "DELETE",
+    });
+    // 삭제 후 목록 갱신
+    setPosts((prev) => prev.filter((post) => post.review_id !== reviewId));
+    alert("삭제가 완료되었습니다.");
+  } catch (error) {
+    console.error("게시물 삭제 실패:", error);
+    alert("삭제 중 오류가 발생했습니다.");
+  }
+};
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -38,7 +57,7 @@ function MileageHistory() {
   };
 
   return (
-    <div className="mileage-page">
+    <div className="postuser-body">
       <header>
         <h1>MRS</h1>
         <div className="search-container">
@@ -56,11 +75,7 @@ function MileageHistory() {
               alt="프로필"
               className="preview-image"
             />
-            <p
-              className="user-nickname"
-              style={{ cursor: "pointer" }}
-              onClick={() => navigate("/profile")}
-            >
+            <p className="user-nickname" onClick={() => navigate("/profile")}>
               {nickname}님
             </p>
             <button className="logout-btn" onClick={handleLogout}>
@@ -81,7 +96,7 @@ function MileageHistory() {
           홈
         </a>
         <div className="dropdown">
-          <a href="MR">리뷰게시판</a>
+          <a href="#">리뷰게시판</a>
           <div className="dropdown-content">
             <a href="MR">영화 리뷰 게시판</a>
             <a href="OTTMR">OTT 게시판</a>
@@ -89,9 +104,9 @@ function MileageHistory() {
           </div>
         </div>
         <div className="dropdown">
-          <a href="#">핫 이슈</a>
+          <a href="/genre">핫 이슈</a>
           <div className="dropdown-content">
-            <a href="/Top10">TOP10 영화</a>
+            <a href="#">TOP10 영화</a>
             <a href="#">영화 뉴스</a>
           </div>
         </div>
@@ -124,69 +139,63 @@ function MileageHistory() {
         <a href="CustomerSupport">고객센터</a>
       </nav>
 
-      <div className="profile-card">
-        <div className="profile-info">
-          <h3 style={{ textAlign: "center", marginBottom: "30px" }}>
-            경험치 & 마일리지 변동 내역
-          </h3>
+      <div className="postuser-container">
+        <h2>내가 작성한 게시물</h2>
 
-          <div className="mileage-summary">
-            <div>
-              현재 경험치: <span>1,250</span> XP
-            </div>
-            <div>
-              마일리지: <span>3,400</span> P
-            </div>
-          </div>
-
-          <table className="mileage-table">
-            <thead>
-              <tr>
-                <th>날짜</th>
-                <th>활동</th>
-                <th>변동</th>
-                <th>설명</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>2025-05-24</td>
-                <td>댓글 작성</td>
-                <td>+10 XP</td>
-                <td>리뷰에 댓글을 남김</td>
-              </tr>
-              <tr>
-                <td>2025-05-23</td>
-                <td>게시물 작성</td>
-                <td>+50 XP</td>
-                <td>'기생충 분석' 게시물 작성</td>
-              </tr>
-              <tr>
-                <td>2025-05-22</td>
-                <td>이벤트 참여</td>
-                <td>+500 P</td>
-                <td>출석 이벤트 참여</td>
-              </tr>
-              <tr>
-                <td>2025-05-20</td>
-                <td>좋아요 받음</td>
-                <td>+20 XP</td>
-                <td>내 글이 10개 좋아요 받음</td>
-              </tr>
-            </tbody>
-          </table>
+        <div className="postuser-clearfix">
+          <input
+            type="text"
+            id="searchInput"
+            className="postuser-search-input"
+            placeholder="제목 검색..."
+          />
         </div>
 
-        <div
-          className="button-group"
-          style={{
-            marginTop: "10px",
-            display: "flex",
-            justifyContent: "center",
-          }}
-        >
+        <table id="postTable" className="postuser-table">
+          <thead>
+            <tr>
+              <th>번호</th>
+              <th>제목</th>
+              <th id="sortDate">작성일 ▲▼</th>
+              <th id="sortViews">조회수 ▲▼</th>
+              <th>관리</th>
+            </tr>
+        </thead>
+          <tbody>
+            {posts.map((post, index) => (
+              <tr key={post.review_id}>
+                <td>{index + 1}</td>
+                <td
+                  style={{ color: "#007bff", cursor: "pointer" }}
+                  onClick={() => navigate(`/posts/${post.review_id}`)} // 상세보기로 이동
+                >
+                  {post.title}
+                </td>
+                <td>{new Date(post.created_date).toLocaleDateString("ko-KR")}</td>
+                <td>{post.views}</td>
+                <td>
+                  <button
+                    className="postuser-btn postuser-btn-edit"
+                    onClick={() => navigate(`/edit/${post.review_id}`)} // 수정으로 이동
+                  >
+                    수정
+                  </button>
+                  <button
+                    className="postuser-btn postuser-btn-delete"
+                    onClick={() => handleDelete(post.review_id)} // 삭제도 연결 가능
+                  >
+                    삭제
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+
+        {/* 하단 버튼 그룹 */}
+        <div className="postuser-btn-group">
           <button
-            className="mileage-profile-btn"
+            className="postuser-btn postuser-btn-profile"
             onClick={() => navigate("/profile")}
           >
             프로필
@@ -197,4 +206,4 @@ function MileageHistory() {
   );
 }
 
-export default MileageHistory;
+export default PostUser;

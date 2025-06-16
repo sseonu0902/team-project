@@ -135,6 +135,7 @@ app.get("/api/user-info", async (req, res) => {
     res.status(500).json({ message: "서버 오류 발생" });
   }
 });
+
 app.get("/check-login", (req, res) => {
   // 클라이언트에서 로그인한 유저 정보를 로컬 스토리지에 저장한다고 가정
   res.json({ message: "로그인 상태 확인은 클라이언트에서 관리합니다." });
@@ -209,6 +210,12 @@ app.post("/api/review", async (req, res) => {
     await db.promise().query(
       "UPDATE users SET points = ?, grade_code = ? WHERE user_id = ?",
       [updatedPoints, new_grade_code, user_id]
+    );
+
+    // ⭐ 등급 변화 이력 저장
+    await db.promise().query(
+      "INSERT INTO grade_change_history (user_id, change_amount, change_description) VALUES (?, ?, ?)",
+      [user_id, 10, '리뷰 작성으로 포인트 획득']
     );
 
     // 리뷰 저장
@@ -310,12 +317,9 @@ app.get("/api/review/:id", async (req, res) => {
   }
 });
 
-
-
 // 조회수 증가 전용 API
 app.post("/api/review/:id/views", async (req, res) => {
   const reviewId = parseInt(req.params.id, 10);
-  console.log("🔥 조회수 증가 요청 들어옴: reviewId =", reviewId);
 
   try {
     await db.promise().query(
@@ -350,6 +354,13 @@ app.post("/api/review/:id/comments", async (req, res) => {
     await db.promise().query(
       "UPDATE users SET points = points + ? WHERE user_id = ?",
       [pointsToAdd, userId]
+    );
+
+  
+    // 등급 변화 이력 기록 추가
+    await db.promise().query(
+      "INSERT INTO grade_change_history (user_id, change_amount, change_description) VALUES (?, ?, ?)",
+      [userId, pointsToAdd, '댓글 작성으로 포인트 획득']
     );
 
     res.status(201).json({ message: "댓글 작성 완료" });
@@ -449,6 +460,87 @@ app.get("/api/review/:id/liked", async (req, res) => {
   } catch (err) {
     console.error("좋아요 여부 조회 실패:", err);
     res.status(500).json({ message: "좋아요 여부 조회 실패" });
+  }
+});
+
+// 내가 작성한 게시물 불러오기 (user_id 기준)
+app.get("/api/review/user/:userId", async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    const [rows] = await db.promise().query(
+      `SELECT review_id, title, created_date, views
+       FROM review
+       WHERE user_id = ?
+       ORDER BY created_date DESC`,
+      [userId]
+    );
+    res.status(200).json(rows);
+  } catch (err) {
+    console.error("내 게시물 조회 실패:", err);
+    res.status(500).json({ message: "서버 오류 발생" });
+  }
+});
+
+app.put("/api/review/:id", async (req, res) => {
+  const reviewId = req.params.id;
+  const { title, content, category, image } = req.body;
+
+  try {
+    await db.promise().query(
+      `UPDATE review 
+       SET title = ?, content = ?, category = ?, image = ?
+       WHERE review_id = ?`,
+      [title, content, category, image, reviewId]
+    );
+    res.status(200).json({ message: "게시글 수정 완료" });
+  } catch (err) {
+    console.error("게시글 수정 오류:", err);
+    res.status(500).json({ message: "서버 오류 발생" });
+  }
+});
+
+//게시물 삭제
+app.delete("/api/review/:id", async (req, res) => {
+  const reviewId = req.params.id;
+
+  try {
+    // 1. 댓글 삭제
+    await db.promise().query("DELETE FROM comment WHERE review_id = ?", [reviewId]);
+
+    // 2. 좋아요 삭제
+    await db.promise().query("DELETE FROM likes WHERE review_id = ?", [reviewId]);
+
+    // 3. 리뷰 평점 항목 삭제 (review_rating 테이블도 있을 경우)
+    await db.promise().query("DELETE FROM review_rating WHERE review_id = ?", [reviewId]);
+
+    // 4. 리뷰 삭제
+    await db.promise().query("DELETE FROM review WHERE review_id = ?", [reviewId]);
+
+    res.status(200).json({ message: "삭제 성공" });
+  } catch (err) {
+    console.error("리뷰 삭제 실패:", err);
+    res.status(500).json({ message: "삭제 실패" });
+  }
+});
+
+// 등급 변화 이력 조회 API
+app.get("/api/grade-history/:userId", async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    const [rows] = await db.promise().query(
+      `SELECT change_datetime, change_amount, change_description
+       FROM grade_change_history
+       WHERE user_id = ?
+       ORDER BY change_datetime DESC`,
+      [userId]
+    );
+
+    res.status(200).json(rows);
+  } catch (err) {
+    console.error("등급 이력 조회 실패:", err);
+    res.status(500).json({ message: "서버 오류 발생" });
   }
 });
 

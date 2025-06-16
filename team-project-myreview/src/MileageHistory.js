@@ -1,29 +1,41 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./PostUser.css";
-import { setupPostUserLogic } from "./postUserLogic";
+import "./MileageHistory.css";
 
-function PostUser() {
+function MileageHistory() {
   const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickname] = useState("");
   const [profileImage, setProfileImage] = useState(null);
-
+  const [gradeHistory, setGradeHistory] = useState([]);
   useEffect(() => {
-    setupPostUserLogic();
     const loginStatus = localStorage.getItem("isLoggedIn") === "true";
     setIsLoggedIn(loginStatus);
+
+    if (!loginStatus) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+    }
+
     const storedUser = localStorage.getItem("user");
     if (storedUser) {
       try {
         const userData = JSON.parse(storedUser);
         if (userData?.nickname) setNickname(userData.nickname);
         if (userData?.profileImage) setProfileImage(userData.profileImage);
+
+         // ⭐ 유저 ID로 등급 이력 불러오기
+        if (userData?.user_id) {
+          fetch(`http://localhost:4000/api/grade-history/${userData.user_id}`)
+            .then((res) => res.json())
+            .then((data) => setGradeHistory(data))
+            .catch((err) => console.error("이력 불러오기 실패:", err));
+        }
       } catch (e) {
         console.warn("⚠ 사용자 정보 파싱 실패:", e);
       }
     }
-  }, []);
+  }, [navigate]);
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -34,7 +46,7 @@ function PostUser() {
   };
 
   return (
-    <div className="postuser-body">
+    <div className="mileage-page">
       <header>
         <h1>MRS</h1>
         <div className="search-container">
@@ -52,7 +64,11 @@ function PostUser() {
               alt="프로필"
               className="preview-image"
             />
-            <p className="user-nickname" onClick={() => navigate("/profile")}>
+            <p
+              className="user-nickname"
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate("/profile")}
+            >
               {nickname}님
             </p>
             <button className="logout-btn" onClick={handleLogout}>
@@ -73,7 +89,7 @@ function PostUser() {
           홈
         </a>
         <div className="dropdown">
-          <a href="#">리뷰게시판</a>
+          <a href="MR">리뷰게시판</a>
           <div className="dropdown-content">
             <a href="MR">영화 리뷰 게시판</a>
             <a href="OTTMR">OTT 게시판</a>
@@ -81,9 +97,9 @@ function PostUser() {
           </div>
         </div>
         <div className="dropdown">
-          <a href="#">핫 이슈</a>
+          <a href="/genre">핫 이슈</a>
           <div className="dropdown-content">
-            <a href="/Top10">TOP10 영화</a>
+            <a href="#">TOP10 영화</a>
             <a href="#">영화 뉴스</a>
           </div>
         </div>
@@ -116,52 +132,70 @@ function PostUser() {
         <a href="CustomerSupport">고객센터</a>
       </nav>
 
-      <div className="postuser-container">
-        <h2>내가 작성한 게시물</h2>
+      <div className="profile-card">
+        <div className="profile-info">
+          <h3 style={{ textAlign: "center", marginBottom: "30px" }}>
+            경험치 & 마일리지 변동 내역
+          </h3>
 
-        <div className="postuser-clearfix">
-          <input
-            type="text"
-            id="searchInput"
-            className="postuser-search-input"
-            placeholder="제목 검색..."
-          />
+          <div className="mileage-summary">
+            <div>
+              현재 경험치: <span>0</span> XP
+            </div>
+            <div>
+              마일리지: <span>0</span> P
+            </div>
+          </div>
+
+          <table className="mileage-table">
+            <thead>
+              <tr>
+                <th>날짜</th>
+                <th>활동</th>
+                <th>변동</th>
+                <th>설명</th>
+              </tr>
+            </thead>
+              <tbody>
+                {gradeHistory.length > 0 ? (
+                gradeHistory.map((item, index) => (
+                  <tr key={index}>
+                    <td>{new Date(item.change_datetime).toLocaleDateString()}</td>
+                    <td>
+                      {item.change_description.includes("댓글") ? "댓글 작성" :
+                      item.change_description.includes("리뷰") ? "게시물 작성" :
+                      item.change_description.includes("좋아요") ? "좋아요 받음" :
+                      item.change_description.includes("이벤트") ? "이벤트 참여" : "기타"}
+                    </td>
+                    <td>
+                      {item.change_amount > 0
+                        ? `+${item.change_amount} XP`
+                        : `${item.change_amount} XP`}
+                    </td>
+                    <td>{item.change_description}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center" }}>
+                    이력 데이터가 없습니다.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
 
-        <table id="postTable" className="postuser-table">
-          <thead>
-            <tr>
-              <th>번호</th>
-              <th>제목</th>
-              <th id="sortDate">작성일 ▲▼</th>
-              <th id="sortViews">조회수 ▲▼</th>
-              <th>관리</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>어벤져스: 엔드게임 리뷰</td>
-              <td data-date="2025-06-05">2025년 6월 5일</td>
-              <td>153</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>존 윅 4 기대평</td>
-              <td data-date="2025-06-01">2025년 6월 1일</td>
-              <td>98</td>
-              <td></td>
-            </tr>
-          </tbody>
-        </table>
-
-        {/* 하단 버튼 그룹 */}
-        <div className="postuser-btn-group">
-          <button className="postuser-btn postuser-btn-edit">수정</button>
-          <button className="postuser-btn postuser-btn-delete">삭제</button>
+        <div
+          className="button-group"
+          style={{
+            marginTop: "10px",
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
           <button
-            className="postuser-btn postuser-btn-profile"
+            className="mileage-profile-btn"
             onClick={() => navigate("/profile")}
           >
             프로필
@@ -172,4 +206,4 @@ function PostUser() {
   );
 }
 
-export default PostUser;
+export default MileageHistory;
