@@ -7,7 +7,7 @@ function MileageHistory() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickname] = useState("");
   const [profileImage, setProfileImage] = useState(null);
-
+  const [gradeHistory, setGradeHistory] = useState([]);
   useEffect(() => {
     const loginStatus = localStorage.getItem("isLoggedIn") === "true";
     setIsLoggedIn(loginStatus);
@@ -23,6 +23,14 @@ function MileageHistory() {
         const userData = JSON.parse(storedUser);
         if (userData?.nickname) setNickname(userData.nickname);
         if (userData?.profileImage) setProfileImage(userData.profileImage);
+
+         // ⭐ 유저 ID로 등급 이력 불러오기
+        if (userData?.user_id) {
+          fetch(`http://localhost:4000/api/grade-history/${userData.user_id}`)
+            .then((res) => res.json())
+            .then((data) => setGradeHistory(data))
+            .catch((err) => console.error("이력 불러오기 실패:", err));
+        }
       } catch (e) {
         console.warn("⚠ 사용자 정보 파싱 실패:", e);
       }
@@ -132,10 +140,10 @@ function MileageHistory() {
 
           <div className="mileage-summary">
             <div>
-              현재 경험치: <span>1,250</span> XP
+              현재 경험치: <span>0</span> XP
             </div>
             <div>
-              마일리지: <span>3,400</span> P
+              마일리지: <span>0</span> P
             </div>
           </div>
 
@@ -148,31 +156,32 @@ function MileageHistory() {
                 <th>설명</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td>2025-05-24</td>
-                <td>댓글 작성</td>
-                <td>+10 XP</td>
-                <td>리뷰에 댓글을 남김</td>
-              </tr>
-              <tr>
-                <td>2025-05-23</td>
-                <td>게시물 작성</td>
-                <td>+50 XP</td>
-                <td>'기생충 분석' 게시물 작성</td>
-              </tr>
-              <tr>
-                <td>2025-05-22</td>
-                <td>이벤트 참여</td>
-                <td>+500 P</td>
-                <td>출석 이벤트 참여</td>
-              </tr>
-              <tr>
-                <td>2025-05-20</td>
-                <td>좋아요 받음</td>
-                <td>+20 XP</td>
-                <td>내 글이 10개 좋아요 받음</td>
-              </tr>
+              <tbody>
+                {gradeHistory.length > 0 ? (
+                gradeHistory.map((item, index) => (
+                  <tr key={index}>
+                    <td>{new Date(item.change_datetime).toLocaleDateString()}</td>
+                    <td>
+                      {item.change_description.includes("댓글") ? "댓글 작성" :
+                      item.change_description.includes("리뷰") ? "게시물 작성" :
+                      item.change_description.includes("좋아요") ? "좋아요 받음" :
+                      item.change_description.includes("이벤트") ? "이벤트 참여" : "기타"}
+                    </td>
+                    <td>
+                      {item.change_amount > 0
+                        ? `+${item.change_amount} XP`
+                        : `${item.change_amount} XP`}
+                    </td>
+                    <td>{item.change_description}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="4" style={{ textAlign: "center" }}>
+                    이력 데이터가 없습니다.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

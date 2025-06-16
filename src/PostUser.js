@@ -8,6 +8,7 @@ function PostUser() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickname] = useState("");
   const [profileImage, setProfileImage] = useState(null);
+  const [posts, setPosts] = useState([]); // 🔹 게시물 목록
 
   useEffect(() => {
     setupPostUserLogic();
@@ -19,11 +20,33 @@ function PostUser() {
         const userData = JSON.parse(storedUser);
         if (userData?.nickname) setNickname(userData.nickname);
         if (userData?.profileImage) setProfileImage(userData.profileImage);
+
+        // 🔹 게시물 불러오기
+        fetch(`http://localhost:4000/api/review/user/${userData.user_id}`)
+          .then((res) => res.json())
+          .then((data) => setPosts(data))
+          .catch((err) => console.error("게시물 불러오기 실패:", err));
       } catch (e) {
         console.warn("⚠ 사용자 정보 파싱 실패:", e);
       }
     }
   }, []);
+
+  const handleDelete = async (reviewId) => {
+  if (!window.confirm("정말로 이 게시글을 삭제하시겠습니까?")) return;
+
+  try {
+    await fetch(`http://localhost:4000/api/review/${reviewId}`, {
+      method: "DELETE",
+    });
+    // 삭제 후 목록 갱신
+    setPosts((prev) => prev.filter((post) => post.review_id !== reviewId));
+    alert("삭제가 완료되었습니다.");
+  } catch (error) {
+    console.error("게시물 삭제 실패:", error);
+    alert("삭제 중 오류가 발생했습니다.");
+  }
+};
 
   const handleLogout = () => {
     localStorage.removeItem("user");
@@ -137,29 +160,40 @@ function PostUser() {
               <th id="sortViews">조회수 ▲▼</th>
               <th>관리</th>
             </tr>
-          </thead>
+        </thead>
           <tbody>
-            <tr>
-              <td>1</td>
-              <td>어벤져스: 엔드게임 리뷰</td>
-              <td data-date="2025-06-05">2025년 6월 5일</td>
-              <td>153</td>
-              <td></td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>존 윅 4 기대평</td>
-              <td data-date="2025-06-01">2025년 6월 1일</td>
-              <td>98</td>
-              <td></td>
-            </tr>
+            {posts.map((post, index) => (
+              <tr key={post.review_id}>
+                <td>{index + 1}</td>
+                <td
+                  style={{ color: "#007bff", cursor: "pointer" }}
+                  onClick={() => navigate(`/posts/${post.review_id}`)} // 상세보기로 이동
+                >
+                  {post.title}
+                </td>
+                <td>{new Date(post.created_date).toLocaleDateString("ko-KR")}</td>
+                <td>{post.views}</td>
+                <td>
+                  <button
+                    className="postuser-btn postuser-btn-edit"
+                    onClick={() => navigate(`/edit/${post.review_id}`)} // 수정으로 이동
+                  >
+                    수정
+                  </button>
+                  <button
+                    className="postuser-btn postuser-btn-delete"
+                    onClick={() => handleDelete(post.review_id)} // 삭제도 연결 가능
+                  >
+                    삭제
+                  </button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
 
         {/* 하단 버튼 그룹 */}
         <div className="postuser-btn-group">
-          <button className="postuser-btn postuser-btn-edit">수정</button>
-          <button className="postuser-btn postuser-btn-delete">삭제</button>
           <button
             className="postuser-btn postuser-btn-profile"
             onClick={() => navigate("/profile")}

@@ -53,7 +53,8 @@ function App() {
             <Route path="/ottmr" element={<OTTMR />} />
             <Route path="/freeboard" element={<FreeBoard />} />
             <Route path="/posts/:id" element={<PostDetail />} />
-
+            <Route path="/edit/:id" element={<CreatePost />} />
+            
             {/* 고객센터/마일리지/내 포스트 */}
             <Route path="/customersupport" element={<CustomerSupport />} />
             <Route path="/mileagehistory" element={<MileageHistory />} />
