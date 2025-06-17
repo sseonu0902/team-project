@@ -160,7 +160,7 @@ function Main() {
       <nav>
         <Link to="/main">홈</Link>
         <div className="dropdown">
-          <a href="#">리뷰게시판</a>
+          <a href="/MR">리뷰게시판</a>
           <div className="dropdown-content">
             <Link to="/MR">영화 리뷰 게시판</Link>
             <Link to="/OTTMR">OTT 게시판</Link>
