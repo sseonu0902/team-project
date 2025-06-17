@@ -1,16 +1,16 @@
-// 상단 import 동일
+// 기존 import 유지
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "./UserContext";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./FreeBoard.css";
+import "./OTTMR.css";
 
-function FreeBoard() {
+function OTTMR() {
   const navigate = useNavigate();
   const { logout } = useContext(UserContext);
   const [posts, setPosts] = useState([]);
   const [sort, setSort] = useState("date");
-  const [category, setCategory] = useState("자유게시판");
+  const [category, setCategory] = useState("OTT 영화 게시판");
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [nickname, setNickname] = useState("");
@@ -58,13 +58,17 @@ function FreeBoard() {
     const fetchPosts = async () => {
       try {
         const response = await axios.get("http://localhost:4000/api/review", {
-          params: { category, sort },
+          params: {
+            category: category,
+            sort: sort,
+          },
         });
         setPosts(response.data);
       } catch (error) {
         console.error("게시물 가져오기 실패:", error);
       }
     };
+
     fetchPosts();
   }, [category, sort]);
 
@@ -129,9 +133,9 @@ function FreeBoard() {
           </div>
         </div>
         <div className="dropdown">
-          <a href="#">핫 이슈</a>
+          <a href="/genre">핫 이슈</a>
           <div className="dropdown-content">
-            <a href="/Top10">TOP10 영화</a>
+            <a href="#">TOP10 영화</a>
             <a href="#">영화 뉴스</a>
           </div>
         </div>
@@ -166,7 +170,6 @@ function FreeBoard() {
 
       {/* 메인 레이아웃 */}
       <div className="main-layout">
-        {/* 사이드바 */}
         <aside className="sidebar">
           <ul>
             <li onClick={() => setCategory("현재 상영 영화 게시판")}>
@@ -179,16 +182,16 @@ function FreeBoard() {
           </ul>
         </aside>
 
-        {/* 메인 콘텐츠 */}
         <main className="main-content">
           <div className="board-header">
-            <h3>자유게시판</h3>
+            <h3>OTT 커뮤니티</h3>
             <button
               className="write-button"
               onClick={() => navigate("/CreatePost")}
             >
               글쓰기
             </button>
+
             <select
               className="sort-dropdown"
               value={sort}
@@ -200,7 +203,6 @@ function FreeBoard() {
             </select>
           </div>
 
-          {/* 게시글 목록 헤더 */}
           <div className="post-list-header">
             <span>포스터</span>
             <span>평균평점</span>
@@ -210,7 +212,6 @@ function FreeBoard() {
             <span>조회</span>
           </div>
 
-          {/* 게시글 목록 */}
           <div className="post-list">
             {posts.length === 0 ? (
               <p className="empty-posts">게시글이 없습니다.</p>
@@ -240,7 +241,6 @@ function FreeBoard() {
             )}
           </div>
 
-          {/* 페이지네이션 */}
           <div className="pagination">
             <Link to="#">1</Link>
             <Link to="#">2</Link>
@@ -254,4 +254,4 @@ function FreeBoard() {
   );
 }
 
-export default FreeBoard;
+export default OTTMR;

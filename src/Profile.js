@@ -163,9 +163,9 @@ function Profile() {
           </div>
         </div>
         <div className="dropdown">
-          <a href="#">핫 이슈</a>
+          <a href="/genre">핫 이슈</a>
           <div className="dropdown-content">
-            <a href="/Top10">TOP10 영화</a>
+            <a href="#">TOP10 영화</a>
             <a href="#">영화 뉴스</a>
           </div>
         </div>
