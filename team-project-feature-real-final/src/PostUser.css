@@ -1,0 +1,88 @@
+.postuser-body {
+  font-family: "Arial", sans-serif;
+  background-color: #f0f0f0;
+  color: #1e1e1e;
+  margin: 0;
+  padding: 0;
+}
+
+.postuser-container {
+  padding: 30px;
+  max-width: 700px;
+  margin: 180px auto;
+  background-color: #ffffff;
+  color: #1e1e1e;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.postuser-container {
+  padding: 40px;
+  max-width: 1000px; /* 기존보다 넓게 */
+  margin: 50px auto; /* 상단 여백도 살짝 줄임 */
+  background-color: #ffffff;
+  color: #1e1e1e;
+  border-radius: 16px; /* 둥근 정도도 키움 */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.postuser-search-input {
+  padding: 8px;
+  width: 250px;
+  margin-bottom: 20px;
+  float: right;
+  background-color: #ffffff;
+  color: #1e1e1e;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.postuser-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #1e1e1e;
+  margin-top: 20px;
+}
+
+.postuser-table th,
+.postuser-table td {
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid #ccc;
+}
+
+.postuser-table th {
+  background-color: #f2f2f2;
+  color: #1e1e1e;
+  cursor: pointer;
+}
+
+.postuser-btn-group {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+  gap: 12px;
+}
+
+.postuser-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+.postuser-btn-edit {
+  background-color: #cdb893;
+  color: #1e1e1e;
+}
+
+.postuser-btn-delete {
+  background-color: #a94442;
+  color: white;
+}
+
+.postuser-btn:hover {
+  opacity: 0.9;
+}

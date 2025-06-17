@@ -1,0 +1,213 @@
+/* MileageHistory.css (접두사 적용: mileage-*) */
+
+body {
+  font-family: "Segoe UI", sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.mileage-header {
+  background-color: #2e2e2e !important;
+  color: #f5f5f5 !important;
+  padding: 15px 20px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mileage-header h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.mileage-search-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-right: 40px;
+  margin-left: auto;
+  margin-bottom: 15px;
+  z-index: 1001;
+}
+
+.mileage-search-input {
+  padding: 8px;
+  width: 350px;
+  background-color: #1e1e1e;
+  color: #f5f5f5;
+  border: 1px solid #cdb893;
+  border-right: none;
+  border-radius: 5px;
+  outline: none;
+}
+
+.mileage-search-button {
+  background-color: #cdb893;
+  color: #1e1e1e;
+  padding: 8px 12px;
+  border: 1px solid #cdb893;
+  font-size: 14px;
+  width: 80px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.mileage-login-btn,
+.mileage-logout-btn,
+.mileage-register-btn {
+  background-color: #cdb893 !important;
+  color: #1e1e1e !important;
+  border: none !important;
+  padding: 8px 12px !important;
+  cursor: pointer !important;
+  border-radius: 5px !important;
+  font-size: 14px !important;
+  width: 80px !important;
+  transition: background-color 0.3s !important;
+  z-index: 900;
+}
+
+.mileage-login-btn:hover,
+.mileage-logout-btn:hover,
+.mileage-register-btn:hover {
+  background-color: #bfa77a !important;
+  color: #1e1e1e !important;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.mileage-user-nickname {
+  font-size: 15px;
+  font-weight: bold;
+  color: #f5f5f5;
+  cursor: pointer;
+  margin-right: 90px;
+  margin-bottom: 30px;
+  transition: color 0.3s;
+}
+
+.mileage-nav {
+  display: flex;
+  justify-content: center;
+  background-color: #2e2e2e !important;
+  padding: 10px 0;
+  gap: 15px !important;
+  position: fixed;
+  top: 95px;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.mileage-nav a {
+  color: #f5f5f5 !important;
+  text-decoration: none;
+  padding: 10px 15px;
+}
+
+.mileage-nav a:hover {
+  background-color: #cdb893;
+  color: #1a1a1a;
+}
+
+.mileage-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.mileage-dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #1e1e1e;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  top: 100%;
+}
+
+.mileage-dropdown:hover .mileage-dropdown-content {
+  display: block;
+}
+
+.mileage-dropdown-content a {
+  display: block;
+  color: #f5f5f5;
+  padding: 10px 15px;
+  text-decoration: none;
+}
+
+.mileage-dropdown-content a:hover {
+  background-color: #cdb893;
+  color: #1a1a1a;
+}
+
+.mileage-container {
+  max-width: 800px;
+  margin: 10 0px auto;
+  background-color: #2e2e2e;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.mileage-container h2 {
+  margin-bottom: 20px;
+  color: #f5f5f5;
+}
+
+.mileage-summary {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.mileage-summary div {
+  background: #444;
+  padding: 15px 20px;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #f5f5f5;
+}
+
+.mileage-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.mileage-table th,
+.mileage-table td {
+  padding: 12px;
+  border-bottom: 1px solid #555;
+  text-align: left;
+}
+
+.mileage-table th {
+  background-color: #3a3a3a;
+  color: #f5f5f5;
+}
+
+.mileage-table tr:hover {
+  background-color: #e2e0e0;
+}
+
+.mileage-profile-btn {
+  background-color: #cdb893 !important;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  cursor: pointer;
+  min-width: 140px;
+  font-size: 14px;
+}
+
+.mileage-profile-btn:hover {
+  background-color: #bfa77a !important;
+}
