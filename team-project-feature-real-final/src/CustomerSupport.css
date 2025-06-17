@@ -1,0 +1,293 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.customer-support header {
+  background-color: #3498db;
+  color: #fff;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+}
+
+.customer-support nav {
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 15px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  align-items: stretch;
+  position: fixed;
+  width: 100%;
+  top: 72px;
+  z-index: 999;
+}
+
+.custom-container {
+  padding: 160px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  max-width: 1200px;
+  margin-top: -200px;
+}
+
+.customer-support .search-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.customer-support .search-input {
+  padding: 8px;
+  width: 280px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.customer-support .search-button {
+  padding: 8px 12px;
+  background-color: #2980b9;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.customer-support .user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.customer-support .login-btn {
+  padding: 8px 12px;
+  background-color: #cdb893;
+  color: #1e1e1e;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.customer-support .login-btn:hover {
+  background-color: #bfa77a;
+  color: #1e1e1e !important;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.customer-support .logout-btn {
+  padding: 8px 12px;
+  background-color: #cdb893;
+  color: #1e1e1e;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.customer-support .logout-btn:hover {
+  background-color: #bfa77a;
+  color: #1e1e1e !important;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.customer-support .user-nickname {
+  font-size: 15px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.customer-support .user-nickname:hover {
+  color: #dcdcdc;
+}
+
+.customer-support .profile-image,
+.customer-support .default-profile-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #ccc;
+  border: 2px solid white;
+}
+
+.customer-support nav > a,
+.customer-support .dropdown {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.customer-support nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  padding: 10px 15px;
+  transition: all 0.3s;
+}
+
+.customer-support nav a:hover {
+  color: #3498db;
+}
+
+.customer-support .dropdown {
+  position: relative;
+}
+
+.customer-support .dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.customer-support .dropdown-content a {
+  display: block;
+  padding: 10px 15px;
+  color: #333;
+  text-decoration: none;
+}
+
+.customer-support .dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.customer-support .dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.customer-support .faq,
+.customer-support .contact-form,
+.customer-support .inquiry-history {
+  background-color: #fff;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  margin-top: 200px;
+}
+
+.customer-support .inquiry-list {
+  margin-top: 20px;
+}
+
+.customer-support .inquiry-item {
+  border: 1px solid #eee;
+  border-radius: 6px;
+  padding: 15px;
+  margin-bottom: 10px;
+}
+
+.customer-support .inquiry-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  color: #666;
+}
+
+.customer-support .inquiry-status {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.customer-support .status-pending {
+  background-color: #ffeeba;
+  color: #856404;
+}
+
+.customer-support .status-answered {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.customer-support .inquiry-content {
+  margin-bottom: 10px;
+}
+
+.customer-support .inquiry-answer {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 4px;
+  margin-top: 10px;
+}
+
+.customer-support form {
+  display: flex;
+  flex-direction: column;
+}
+
+.customer-support label {
+  margin-top: 10px;
+}
+
+/* ✅ 고정 너비 설정 */
+.customer-support form input[type="text"],
+.customer-support form input[type="email"],
+.customer-support form textarea {
+  width: 600px !important;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.customer-support textarea {
+  resize: vertical;
+  height: 180px;
+}
+
+.customer-support form button {
+  margin-top: 20px;
+  padding: 14px;
+  background-color: #cdb893 !important;
+  color: #1e1e1e !important;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.customer-support form button:hover {
+  background-color: #bfa77a !important;
+  color: #1e1e1e !important;
+}
+
+.customer-support-card {
+  background-color: #f4f4f4;
+  width: 1000px;
+  height: 950px;
+  margin-top: -20px;
+  margin-bottom: 20px;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
