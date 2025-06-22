@@ -1,0 +1,337 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.custom-faq {
+  padding: 20px;
+}
+
+.custom-faq-item {
+  background: #f4f4f4;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  padding: 15px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.custom-faq-question {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.custom-faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.custom-faq-item.active .custom-faq-answer {
+  max-height: 500px;
+  padding-top: 10px;
+}
+
+.customer-support header {
+  background-color: #3498db;
+  color: #fff;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  width: 100%;
+  top: 0;
+  z-index: 1000;
+}
+
+.customer-support nav {
+  background-color: #ffffff;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 15px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  align-items: stretch;
+  position: fixed;
+  width: 100%;
+  top: 72px;
+  z-index: 999;
+}
+
+.customer-support .search-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.customer-support .search-input {
+  padding: 8px;
+  width: 280px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.customer-support .search-button {
+  padding: 8px 12px;
+  background-color: #2980b9;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.customer-support .user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.customer-support .login-btn,
+.customer-support .logout-btn {
+  padding: 8px 12px;
+  background-color: #cdb893;
+  color: #1e1e1e;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.customer-support .login-btn:hover,
+.customer-support .logout-btn:hover {
+  background-color: #a68c5e;
+  color: #1e1e1e !important;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.customer-support .user-nickname {
+  font-size: 15px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.customer-support .user-nickname:hover {
+  color: #dcdcdc;
+}
+
+.customer-support .profile-image,
+.customer-support .default-profile-circle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  background-color: #ccc;
+  border: 2px solid white;
+}
+
+.customer-support nav > a,
+.customer-support .dropdown {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.customer-support nav a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  padding: 10px 15px;
+  transition: all 0.3s;
+}
+
+.customer-support nav a:hover {
+  color: #3498db;
+}
+
+.customer-support .dropdown {
+  position: relative;
+}
+
+.customer-support .dropdown-content {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1;
+}
+
+.customer-support .dropdown-content a {
+  display: block;
+  padding: 10px 15px;
+  color: #333;
+  text-decoration: none;
+}
+
+.customer-support .dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.customer-support .dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.custom-card {
+  background-color: #f4f4f4;
+  width: 1200px;
+  margin: 0 auto 40px;
+  padding: 80px 100px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  box-sizing: border-box;
+}
+
+.custom-faq,
+.custom-inquiry-history,
+.custom-support-form {
+  width: 100%;
+  padding: 0;
+  background: none;
+  box-shadow: none;
+  box-sizing: border-box;
+}
+
+.custom-faq h2,
+.custom-inquiry-history h2,
+.custom-support-form h2 {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  padding-left: 4px;
+  text-align: center;
+}
+
+.custom-faq-item,
+.custom-inquiry-item {
+  background-color: #f7f7f7;
+  border-radius: 8px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  border: 1px solid transparent;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.custom-faq-item:hover,
+.custom-inquiry-item:hover {
+  background-color: #d0d0d0;
+  border-color: #ccc;
+}
+
+.custom-faq-question,
+.custom-inquiry-header {
+  font-weight: bold;
+  font-size: 15px;
+  color: #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.custom-faq-answer,
+.custom-inquiry-answer {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+  display: none;
+  line-height: 1.6;
+}
+
+.custom-faq-item.active .custom-faq-answer,
+.custom-inquiry-item.active .custom-inquiry-answer {
+  display: block;
+}
+
+.custom-inquiry-content {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #444;
+}
+
+.custom-inquiry-status {
+  font-size: 13px;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: #eee;
+  color: #333;
+  flex-shrink: 0;
+  margin-left: 10px;
+}
+
+.custom-status-pending {
+  background-color: #ffeeba;
+  color: #856404;
+}
+
+.custom-status-answered {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.custom-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.custom-form label {
+  font-weight: bold;
+  width: 100%;
+  max-width: 600px;
+  margin-bottom: 4px;
+  align-self: flex-start;
+}
+
+.custom-form input[type="text"],
+.custom-form input[type="email"],
+.custom-form textarea {
+  width: 100%;
+  max-width: 600px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.custom-form textarea {
+  resize: vertical;
+  height: 180px;
+}
+
+.custom-form button {
+  margin-top: 10px;
+  padding: 14px 20px;
+  background-color: #cdb893;
+  color: #1e1e1e;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.custom-form button:hover {
+  background-color: #a68c5e;
+}

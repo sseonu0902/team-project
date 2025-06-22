@@ -1,0 +1,88 @@
+/* Login.css */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+header {
+  background-color: #5d9cec;
+  color: #fff;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.3);
+  z-index: 999;
+}
+
+.overlay.open {
+  display: block;
+}
+
+.container {
+  padding: 20px;
+  max-width: 600px;
+  margin: 100px auto;
+  width: 100%;
+  justify-content: center;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 60px;
+  width: auto;
+  align-items: center; /* 추가: align-items 설정 */
+}
+
+#login-form label {
+  display: block;
+  margin: 10px 0 5px;
+}
+
+#login-form input {
+  padding: 10px;
+  margin-top: 0px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 500px; /* 고정된 길이 설정 */
+  box-sizing: border-box;
+  flex-grow: 0; /* 추가: flex-grow 속성 제거 */
+}
+
+button {
+  padding: 10px;
+  background-color: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 700px; /* 고정된 길이 설정 */
+  box-sizing: border-box;
+  margin-left: 0px;
+  margin-bottom: 10px;
+  align-self: center;
+  flex-grow: 0; /* 추가: flex-grow 속성 제거 */
+}
+
+button:hover {
+  background-color: #2980b9;
+}
+
+.register-container {
+  margin-top: 10px;
+  text-align: center; /* 회원가입 링크 가운데 정렬 */
+}

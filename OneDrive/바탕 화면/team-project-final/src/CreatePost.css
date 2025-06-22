@@ -1,0 +1,180 @@
+.review-container {
+  width: 1200px;
+  margin: 160px auto;
+  padding: 40px;
+  background-color: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.review-container h2 {
+  text-align: left;
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 30px;
+}
+
+/* 게시판 선택 + 제목 */
+.top-row {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+
+/* 내용 + 사진 */
+.middle-row {
+  display: flex;
+  gap: 40px;
+  margin-bottom: 30px;
+}
+
+/* 평가 항목을 사진과 같은 열에 배치하고 왼쪽 정렬 */
+.ratings-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: 40px;
+  margin-left: 10px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+
+.form-group.full-width {
+  width: 100%;
+  flex: 2;
+}
+
+.form-group select,
+.form-group input,
+.form-group textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+}
+
+.form-group textarea {
+  resize: vertical;
+  height: 600px;
+}
+
+/* 사진 업로드 박스 */
+.review-image-upload {
+  width: 250px;
+  height: 150px;
+  border: 2px dashed #aaa;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.review-image-upload label {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #777;
+  font-size: 14px;
+}
+
+.review-image-upload img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.review-image-upload input {
+  display: none;
+}
+
+/* 별점 */
+.star-rating {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+/* 평가 항목 한 줄 */
+.rating-group-with-remove {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.rating-select-wrap {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.remove-rating-btn {
+  background-color: #ff4d4f !important;
+  border: none;
+  color: white;
+  font-size: 14px;
+  padding: 2px 6px;
+  border-radius: 6px;
+  cursor: pointer;
+  width: auto;
+  min-width: 30px;
+  text-align: center;
+}
+
+.remove-rating-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+/* 항목 추가 버튼 정렬 및 크기 조절 */
+.add-rating-btn {
+  background-color: #eee;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  cursor: pointer;
+  width: 120px;
+  margin-top: 10px;
+  margin-left: 0;
+  align-self: flex-start;
+  height: 36px;
+}
+
+/* 제출 버튼 스타일 (수정됨) */
+.review-submit {
+  margin-top: 20px;
+}
+
+.review-submit button {
+  width: 100%;
+  padding: 14px;
+  background-color: #cdb893 !important;
+  color: #1e1e1e !important;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s !important;
+}
+
+.review-submit button:hover {
+  background-color: #bfa77a !important;
+}
